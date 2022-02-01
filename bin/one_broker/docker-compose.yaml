@@ -1,0 +1,55 @@
+---
+version: '2'
+services:
+  zookeeper1:
+    image: confluentinc/cp-zookeeper:7.0.1
+    hostname: zookeeper1
+    container_name: zookeeper1
+    networks: 
+      - kafka1_network
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - "zookeeper1_data:/var/lib/zookeeper/data"
+      - "zookeeper1_logs:/var/lib/zookeeper/log"
+
+  kafka1_broker_1:
+    image: confluentinc/cp-kafka:7.0.1
+    hostname: kafka1_broker_1
+    container_name: kafka1_broker_1
+    depends_on:
+      - zookeeper1
+    networks: 
+      - kafka1_network
+    ports:
+      - "29092:29092"
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper1:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1_broker_1:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+    volumes:
+      - "kafka1_broker_1_data:/var/lib/kafka/data"
+
+
+networks:
+  kafka1_network:
+    external: true
+volumes:
+  zookeeper1_data:
+    driver: local
+  zookeeper1_logs:
+    driver: local
+  kafka1_broker_1_data:
+    driver: local
