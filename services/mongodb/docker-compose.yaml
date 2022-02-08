@@ -1,0 +1,20 @@
+---
+version: '3'
+services:
+  mongodb:
+    image: mongo:5.0.6
+    hostname: mongodb
+    networks:
+      - mongo_network
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo_data:/data/db"
+
+networks:
+  mongo_network:
+    external: true
+volumes:
+  mongo_data:
+    driver: local
+
