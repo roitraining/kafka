@@ -1,2 +1,2 @@
-cd three_brokers
+cd $KAFKA_COURSE_HOME/bin/three_brokers
 docker-compose stop
