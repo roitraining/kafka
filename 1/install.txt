@@ -1,0 +1,20 @@
+#! /bin/sh
+# Here's a list of all the python libraries I've added or upgraded so far
+pip3 uninstall jupyter-client jupyter-console jupyter-core jupyter-server jupyterlab jupyterlab-server
+pip3 install jupyterlab jupyter_client
+pip3 install --upgrade jupyter_client
+# jupyter lab --allow-root
+
+pip3 install --upgrade pip
+pip3 install kafka
+pip3 install pykafka
+pip3 install pandas
+pip3 install cython
+pip3 install pyarrow==0.9.0
+pip3 install --upgrade protobuf
+pip3 install --upgrade tensorflow
+pip3 install apache-beam
+pip3 install apache-beam[interactive]
+pip3 install docker
+
+
