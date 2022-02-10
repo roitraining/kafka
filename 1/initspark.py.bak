@@ -14,15 +14,22 @@ from pyspark.sql.types import *
 
 packages = ['org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
            ,'org.mongodb.spark:mongo-spark-connector_2.11:2.4.3'
-           ,'com.datastax.spark:spark-cassandra-connector_2.11:2.4.0'
+           ,'com.datastax.spark:spark-cassandra-connector_2.11:2.5.2'
            ]
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(packages) + ' pyspark-shell'
 #os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,com.datastax.spark:spark-cassandra-connector_2.11:2.4.0 pyspark-shell'
 
-def initspark(appname = "Test", servername = "local", cassandra="127.0.0.1", mongo="mongodb://127.0.0.1/classroom"):
+def initspark(appname = "Test", servername = "local"
+    , cassandra = "127.0.0.1", cassandra_user = 'cassandra', cassandra_password='student'
+    , mongo = "mongodb://127.0.0.1/classroom", mongo_user = '', mongo_password = ''):
     print ('initializing pyspark')
-    conf = SparkConf().set("spark.cassandra.connection.host", cassandra).setAppName(appname).setMaster(servername)
+    conf = (SparkConf().set("spark.cassandra.connection.host", cassandra)
+            .setAppName(appname)
+            .setMaster(servername)
+            .set("spark.cassandra.auth.username", "cassandra") 
+            .set("spark.cassandra.auth.password", "****") 
+    )
     sc = SparkContext(conf=conf)
     spark = SparkSession.builder.appName(appname) \
     .config("spark.mongodb.input.uri", mongo) \

@@ -3,7 +3,6 @@ version: '2'
 services:
   cassandra:
     image: docker.io/bitnami/cassandra:4.0
-#    network_mode: host
     networks:
       - cassandra_network
     expose:
@@ -23,7 +22,7 @@ volumes:
 networks:
   cassandra_network:
     external: true
-#    driver: bridge
+
 #  app-tier:
 #    driver: bridge
 
