@@ -7,15 +7,38 @@ from apache_beam.options.pipeline_options import PipelineOptions
 brokers = 'localhost:9092'
 kafka_topic = 'stocks'
 
+options = PipelineOptions(
+      runner = "SparkRunner",
+#      environment_type = "DOCKER"
+  )
+with beam.Pipeline(options = options) as p:
+    (p
+      | 'Read from Kafka' >> ReadFromKafka(consumer_config=
+                                {
+                                 'bootstrap.servers': brokers
+                                ,'auto.offset.reset': 'latest'
+                                ,'session.timeout.ms': '12000'
+                                }
+                            , topics=[kafka_topic])
+      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
+    )
 
 def run_pipeline():
   options = PipelineOptions(
 #      runner = "DirectRunner",
       runner = "PortableRunner",
-      job_endpoint = "localhost:8099",
-      environment_type = "LOOPBACK"
+      environment_type = "DOCKER"
+#      job_endpoint = "localhost:8099",
+      #      environment_type = "LOOPBACK"
   )
   #print(options)
+
+  # python path/to/my/pipeline.py \
+  # --runner=PortableRunner \
+  # --job_endpoint=ENDPOINT \
+  # --environment_type=DOCKER \
+
+
 
 # options = PipelineOptions([
 #     "--runner=PortableRunner",
@@ -57,3 +80,22 @@ def run_pipeline():
 if __name__ == '__main__':
    run_pipeline()
     
+
+with beam.Pipeline(options = options) as p:
+    (p
+      | 'Read from Kafka' >> beam.Create(['ab','cd','ef'])
+      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
+    )
+
+
+import apache_beam as beam
+from apache_beam.options.pipeline_options import PipelineOptions
+
+options = PipelineOptions(
+      runner = "SparkRunner",
+  )
+with beam.Pipeline() as p:
+    (p
+      | 'Read from Kafka' >> beam.Create(['ab','cd','ef'])
+      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
+    )
