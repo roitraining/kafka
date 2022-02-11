@@ -8,16 +8,16 @@ if 'classroom' in (x['name'] for x in client.list_databases()):
     client.drop_database('classroom')
 
 people = classroom['people']
-name = {"firstname" : "Adam", "personid":4}
+name = {"personid" : 10, "firstname" : "Adam"}
 x = people.insert_one(name)
 
-names = [{"firstname" : "Betty", "personid":5}
-         ,{"firstname" : "Charlie", "personid":6}]
+names = [{"personid" : 20, "firstname" : "Betty"}
+         ,{"personid" : 30, "firstname" : "Charlie"}]
 x = people.insert_many(names)
 
-x = people.find()
 print ('*' * 80)
 print ('from mongo directly')
+x = people.find()
 print (list(x))
 print ('*' * 80)
 
@@ -35,26 +35,33 @@ sc, spark, conf = initspark(mongo =  "mongodb://127.0.0.1/classroom")
 #     .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/classroom") \
 #     .getOrCreate()
 
+print ('*' * 80)
+print ('read through spark and append records')
+print ('*' * 80)
 df = spark.read.format("mongo").option("uri", "mongodb://127.0.0.1/classroom.people").load()
 print ('*' * 80)
 print ('from pyspark')
 df.show()
-print ('*' * 80)
 
-x = sc.parallelize([(7, 'David')])
-x1 = spark.createDataFrame(x, schema = ['personid', 'firstname'])
+
+new_data = [{'personid':40, 'firstname':'Sri'}
+                 , {'personid':50, 'firstname': 'Han'}
+                 ]
+x1 = spark.createDataFrame(new_data)
+
 x1.write.format("mongo").options(collection="people", database="classroom").mode("append").save()
 
 print ('*' * 80)
-print ('from pyspark after insert')
+print ('re-read through spark after spark append records')
+print ('*' * 80)
 df = spark.read.format("mongo").option("uri", "mongodb://127.0.0.1/classroom.people").load()
 df.show()
-print ('*' * 80)
 
+
+print ('*' * 80)
+print ('sparksql example')
+print ('*' * 80)
 df.createOrReplaceTempView('people')
-
-print ('*' * 80)
-print ('spark sql')
-spark.sql('select * from people').show()
+spark.sql('select personid, UPPER(firstname) as name from people order by name').show()
 print ('*' * 80)
 
