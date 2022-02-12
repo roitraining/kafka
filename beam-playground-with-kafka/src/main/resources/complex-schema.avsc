@@ -1,0 +1,63 @@
+{
+	"type": "record",
+	"name": "Complex",
+	"namespace": "com.namespace",
+	"doc": "This is a record with only complex fields.",
+	"fields": [{
+		"name": "cmplx1",
+		"type": {
+			"type": "record",
+			"name": "Simple",
+			"namespace": "com.namespace",
+			"doc": "This is a record with only simple fields.",
+			"fields": [{
+				"name": "req1",
+				"type": "string",
+				"doc": "Required field 1"
+			}, {
+				"name": "opt1",
+				"type": ["string", "null"],
+				"doc": "Optional Field 1"
+			}, {
+				"name": "opt2",
+				"type": "boolean",
+				"default": false,
+				"doc": "Optional field 2"
+			}, {
+				"name": "opt3",
+				"type": ["double", "null"],
+				"doc": "Optional field 3"
+			}],
+			"version": 1
+		},
+		"doc": "Required field 1"
+	}, {
+		"name": "optcmplx",
+		"type": [{
+			"type": "record",
+			"name": "Simple2",
+			"namespace": "com.namespace",
+			"doc": "This is a record with only simple fields.",
+			"fields": [{
+				"name": "s",
+				"type": "boolean",
+				"doc": "Required field"
+			}],
+			"version": 1
+		}, "null"],
+		"doc": "Optional Field 1"
+	}, {
+		"name": "opt2",
+		"type": ["boolean", "null"],
+		"default": false,
+		"doc": "Optional field 2"
+	}, {
+		"name": "opt3",
+		"type": [{
+			"type": "array",
+			"items": "int"
+		}, "null"],
+		"doc": "Optional field 3"
+	}],
+	"version": 1
+}
