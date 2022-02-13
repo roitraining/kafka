@@ -1,0 +1,10 @@
+{
+    "namespace": "example.avro",
+    "type": "record",
+    "name": "Stock",
+    "fields": [
+        {"name": "timestamp", "type": "string"},
+        {"name": "symbol",  "type": "string"},
+        {"name": "price", "type": "int"}
+    ]
+}

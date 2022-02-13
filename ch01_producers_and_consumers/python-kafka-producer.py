@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-from pykafka import KafkaClient
+from kafka import KafkaProducer
 import json
 import random
 import threading
@@ -10,24 +10,22 @@ producer_sleep_time = 4
 stocks = ['AAPL', 'GOOG', 'MSFT']
 kafka_topic='stocks'
 
+key = 1
 def produce_data():
     hosts = 'localhost:9092'
-    client = KafkaClient(hosts=hosts)
-    print('client topics:', client.topics)
-
-    topic = client.topics[bytes(kafka_topic, encoding = 'utf-8')]
-    producer = topic.get_producer()
+    producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
     def stock_message(stock_number):
+        global key
         while True:
             msg = json.dumps({
                 'timestamp': str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
                 'symbol': stocks[stock_number],
                 'price': random.randint(100, 300),
             })
-            #os.system('clear')
-            print('msg:', msg)
-            producer.produce(bytes(msg, encoding='utf-8'))
+            print('key:', key, 'msg:', msg)
+            producer.send(kafka_topic, key=str.encode(str(key)), value=str.encode(msg))
+            key += 1
             time.sleep(producer_sleep_time)
 
     thread_list = [threading.Thread(target=stock_message, args=(i,)) for i in range(len(stocks))]

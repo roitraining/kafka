@@ -1,53 +1,36 @@
 #! /usr/bin/python3
-from kafka import KafkaProducer
+from pykafka import KafkaClient
 import json
 import random
 import threading
 import time
 import os
 
-import io
-import avro.io
-import avro.schema
-import avro.datafile
-
-
-def json_to_avro(msg, schema):
-    buf = io.BytesIO()
-    writer = avro.datafile.DataFileWriter(buf, avro.io.DatumWriter(), schema)
-    writer.append(msg)
-    writer.flush()
-    buf.seek(0)
-    data = buf.read()
-    return data
-
 producer_sleep_time = 4
 stocks = ['AAPL', 'GOOG', 'MSFT']
 kafka_topic='stocks'
 
 key = 1
-stock_schema = avro.schema.Parse(open("stock.avsc", "rb").read())
-
 def produce_data():
     hosts = 'localhost:9092'
-    producer = KafkaProducer(bootstrap_servers='localhost:9092')
+    client = KafkaClient(hosts=hosts)
+    print('client topics:', client.topics)
+
+    topic = client.topics[bytes(kafka_topic, encoding = 'utf-8')]
+    producer = topic.get_producer()
 
     def stock_message(stock_number):
         global key
         while True:
-            msg = {
+            msg = json.dumps({
                 'timestamp': str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
                 'symbol': stocks[stock_number],
                 'price': random.randint(100, 300),
-            }
-            # msg = json.dumps({
-            #     'timestamp': str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
-            #     'symbol': stocks[stock_number],
-            #     'price': random.randint(100, 300),
-            # })
+            })
+            #os.system('clear')
             print('key:', key, 'msg:', msg)
-            avro_msg = json_to_avro(msg, stock_schema)
-            producer.send(kafka_topic, key=str.encode(str(key)), value=avro_msg)
+#            producer.produce(bytes(msg, encoding='utf-8'))
+            producer.send(kafka_topic, key=str.encode(str(key)), value=str.encode(msg))
             key += 1
             time.sleep(producer_sleep_time)
 

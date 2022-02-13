@@ -1,26 +1,86 @@
+# /usr/local/flink/bin/flink run --python beam-kafka-consumer-print.py 
+import sys
+print(sys.version)
 import apache_beam as beam
 import apache_beam.transforms.window as window
 from apache_beam.io.external.kafka import ReadFromKafka, WriteToKafka
 from apache_beam.options.pipeline_options import PipelineOptions
+import logging
+import typing
 
 
 brokers = 'localhost:9092'
 kafka_topic = 'stocks'
+kafka_topic2 = 'stocks2'
+
+def convert_kafka_record_to_dictionary(record):
+    # the records have 'value' attribute when --with_metadata is given
+    if hasattr(record, 'value'):
+      stock_bytes = record.value
+    elif isinstance(record, tuple):
+      stock_bytes = record[1]
+    else:
+      raise RuntimeError('unknown record type: %s' % type(record))
+    # Converting bytes record from Kafka to a dictionary.
+    import ast
+    stock = ast.literal_eval(stock_bytes.decode("UTF-8"))
+    output = {
+        key: stock[key]
+        for key in ['timestamp', 'symbol', 'price']
+    }
+    if hasattr(record, 'timestamp'):
+      # timestamp is read from Kafka metadata
+      output['timestamp'] = record.timestamp
+    print (record, output)
+    return output
+
+def printit(x):
+  print('x')
+
+def log(stock):
+  logging.info(stock)
+  # if 'timestamp' in stock:
+  #   #logging.info(f"stock {stock['timestamp']}, {stock['symbol']}, {stock['price']}")
+  #   logging.info(stock)
+  # else:
+  #   logging.info('error')
 
 options = PipelineOptions(
-      runner = "SparkRunner",
+#      runner = "SparkRunner"
+#      runner = "PortableRunner"
+      runner = "FlinkRunner"
+      , flink_master="localhost:8081"
+      , environment_type="LOOPBACK"
+      , streaming="true"
+      #, checkpointing_interval=1000
+      #, checkpointingInterval=30000, env="dev"
 #      environment_type = "DOCKER"
   )
+
+kafka_config = {
+                  'bootstrap.servers': brokers
+                }
+
 with beam.Pipeline(options = options) as p:
     (p
-      | 'Read from Kafka' >> ReadFromKafka(consumer_config=
-                                {
-                                 'bootstrap.servers': brokers
-                                ,'auto.offset.reset': 'latest'
-                                ,'session.timeout.ms': '12000'
-                                }
-                            , topics=[kafka_topic])
-      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
+      # | 'Read from Kafka' >> ReadFromKafka(consumer_config = kafka_config
+      #       , topics=[kafka_topic] , with_metadata = True)
+    | beam.Create(['a','b','c'])
+    | beam.Map(log)
+#       | 'Read from Kafka' >> ReadFromKafka(consumer_config=
+#                                 {
+#                                  'bootstrap.servers': brokers
+# #                                ,'auto.offset.reset': 'latest'
+# #                                ,'session.timeout.ms': '12000'
+#                                 }
+#                             , topics=[kafka_topic], with_metadata = True)
+#        | beam.Map(print)
+#       | beam.Map(lambda record: convert_kafka_record_to_dictionary(record))                            
+      # | beam.FlatMap(lambda stock: log_stock(stock))
+#       | beam.WindowInto(beam.window.FixedWindows(3))
+#      | 'Print' >> beam.Map(lambda x : print('test', x))
+#      | WriteToKafka(producer_config={'bootstrap.servers': brokers}, topic=kafka_topic2)
+        #      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
     )
 
 # def run_pipeline():
