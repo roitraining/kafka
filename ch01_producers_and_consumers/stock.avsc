@@ -3,8 +3,9 @@
     "type": "record",
     "name": "Stock",
     "fields": [
-        {"name": "timestamp", "type": "string"},
+        {"name": "event_time", "type": "string"},
         {"name": "symbol",  "type": "string"},
-        {"name": "price", "type": "int"}
+        {"name": "price", "type": "float"},
+        {"name": "quantity", "type": "int"}
     ]
 }

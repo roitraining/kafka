@@ -10,8 +10,10 @@ import typing
 
 
 brokers = 'localhost:9092'
+brokers = '34.66.53.122:9092'
+
 kafka_topic = 'stocks'
-kafka_topic2 = 'stocks2'
+kafka_topic = 'stocks2'
 
 def convert_kafka_record_to_dictionary(record):
     # the records have 'value' attribute when --with_metadata is given
@@ -48,10 +50,10 @@ def log(stock):
 options = PipelineOptions(
 #      runner = "SparkRunner"
 #      runner = "PortableRunner"
-      runner = "FlinkRunner"
-      , flink_master="localhost:8081"
-      , environment_type="LOOPBACK"
-      , streaming="true"
+#      runner = "FlinkRunner"
+#      , flink_master="localhost:8081"
+#      , environment_type="LOOPBACK"
+#      , streaming="true"
       #, checkpointing_interval=1000
       #, checkpointingInterval=30000, env="dev"
 #      environment_type = "DOCKER"
@@ -159,3 +161,8 @@ with beam.Pipeline(options = options) as p:
 #       | 'Read from Kafka' >> beam.Create(['ab','cd','ef'])
 #       | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
 #     )
+with beam.Pipeline() as p:
+    (p
+      | 'Read from Kafka' >> ReadFromKafka(consumer_config = kafka_config, topics=[kafka_topic] , with_metadata = True)
+      | beam.Map(print)
+    )

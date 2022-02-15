@@ -28,6 +28,7 @@ echo "starting node manager"
 jps
 hadoop fs -mkdir /user
 hadoop fs -mkdir /hbase
+hadoop fs -mkdir /hbase/tmp
 hadoop fs -mkdir /user/student
 hadoop fs -mkdir /user/root
 hadoop fs -mkdir /user/hive

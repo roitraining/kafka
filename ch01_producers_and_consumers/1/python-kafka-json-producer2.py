@@ -1,4 +1,5 @@
 #! /usr/bin/python3
+# pip install kafka-python
 from kafka import KafkaProducer
 import json
 import random
@@ -8,18 +9,18 @@ import os
 
 producer_sleep_time = 4
 stocks = ['AAPL', 'GOOG', 'MSFT']
-kafka_topic='stocks'
+kafka_topic='stocks2'
 
 key = 1
-def produce_data():
-    hosts = 'localhost:9092'
+def produce_json_data():
+    hosts = '34.66.53.122:9092'
     producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
     def stock_message(stock_number):
         global key
         while True:
             msg = json.dumps({
-                'timestamp': str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
+                'event_time': str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
                 'symbol': stocks[stock_number],
                 'price': random.randint(100, 300),
             })
@@ -39,4 +40,4 @@ def produce_data():
         pass
 
 if __name__ == '__main__':
-    produce_data()
+    produce_json_data()
