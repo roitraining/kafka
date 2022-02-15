@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 # pip install avro-json-serializer
 import io
 import uuid
@@ -35,8 +37,8 @@ def insert_sql(event):
    mycursor.execute(sql)
    cn.commit()
 
-def consume(**args):
-   servers = args['bootstrap_servers']
+def consume(**kvargs):
+   servers = kvargs['bootstrap_servers']
    if ',' in servers:
       args['bootstrap_servers'] = servers.split(',')
    else:

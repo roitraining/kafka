@@ -1,5 +1,4 @@
-#! /usr/bin/python3
-
+#! /usr/bin/python
 
 from kafka import KafkaProducer
 import json
@@ -7,6 +6,7 @@ import random
 import threading
 import time
 import os
+import argparse
 
 import io
 import uuid
@@ -24,15 +24,12 @@ def json_to_avro(msg, schema):
     data = buf.read()
     return data
 
-producer_sleep_time = 4
-stocks = ['AAPL', 'GOOG', 'MSFT']
-kafka_topic='stocks'
-
 stock_schema = avro.schema.Parse(open("stock.avsc", "rb").read())
 
-def produce_avro_data():
-    hosts = 'localhost:9092'
-    producer = KafkaProducer(bootstrap_servers='localhost:9092')
+def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks'):
+    producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
+    producer_sleep_time = 4
+    stocks = ['AAPL', 'GOOG', 'MSFT']
 
     def stock_message(stock_number):
         while True:
@@ -42,12 +39,9 @@ def produce_avro_data():
                 'price': random.randint(10000, 30000)/100,
                 'quantity': random.randint(10, 1000)
             }
-#            key = str(uuid.uuid))
             key = uuid.uuid4()
             print('key:', key, 'msg:', msg)
             avro_msg = json_to_avro(msg, stock_schema)
-#            producer.send(kafka_topic, key=key, value=avro_msg)
-#            producer.send(kafka_topic, key=str.encode(str(key)), value=avro_msg)
             producer.send(kafka_topic, key=key.bytes, value=avro_msg)
             time.sleep(producer_sleep_time)
 
@@ -61,10 +55,21 @@ def produce_avro_data():
         time.sleep(600)
         pass
 
+def main():
+   global cn, mycursor
+   parser = argparse.ArgumentParser()
+   parser.add_argument(
+      '-b', '--bootstrap_servers', required=False, type=str, default='localhost:9092')
+   parser.add_argument(
+      '-t', '--topic', required=False, type=str, default='stocks')
+
+   args = parser.parse_args()
+   print(args)
+
+
+   produce_avro_data(bootstrap_servers = args.bootstrap_servers, topic = args.topic)
+
 if __name__ == '__main__':
-    produce_avro_data()
-
-
-
+   main()
 
 
