@@ -40,16 +40,6 @@ def initspark(appname = "Test", servername = "local"
     print ('pyspark initialized')
     return sc, spark, conf
 
-def hdfsPath(folder, hostname = 'localhost', port = 9000):
-    if hostname == None:
-        hostname = 'localhost'
-        #hostname = platform.node()
-    if port == None:
-        port = 9000
-    if folder == None:
-        folder = ''
-    return 'hdfs://{0}:{1}/{2}'.format(hostname, port, folder)
-
 def display(df, limit = 10):
     from IPython.display import display    
     display(df.limit(limit).toPandas())
