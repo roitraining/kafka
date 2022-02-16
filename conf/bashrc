@@ -1,0 +1,262 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# remove /root/.bashrc and replace with symlink to student 
+# ln -s /home/student/.bashrc /root/bashrc
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+	# We have color support; assume it's compliant with Ecma-48
+	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+	# a case would tend to support setf rather than setaf.)
+	color_prompt=yes
+    else
+	color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\] $ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\W $ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# added for pycharm
+export PATH=$PATH:/home/student/Pycharm/bin
+alias pycharm=pycharm.sh
+
+#export PATH=/home/student/anaconda3/bin:$PATH
+# added for chromedriver 
+export PATH=$PATH:.
+
+# added to make dashboards work
+export WERKZEUG_RUN_MAIN=true
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+export SQOOP_HOME=/usr/local/sqoop
+export CQLSH_NO_BUNDLED=true
+export PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin:/usr/local/hive/bin:/usr/local/hive/sbin:/usr/local/spark/bin:/usr/local/spark/sbin:$SQOOP_HOME/bin
+
+alias python=/usr/bin/python3.7
+#alias python2=/usr/bin/python2.7
+alias python3=/usr/bin/python3.7
+alias pip=/usr/local/bin/pip
+alias pip3=/usr/local/bin/pip
+
+alias start-hadoop="/class/bin/start-hadoop.sh"
+alias stop-hadoop="/class/bin/stop-hadoop.sh"
+alias start-notebook="cd /class && /class/bin/start-notebook.sh"
+alias start-remote-notebook="cd /class && /class/bin/start-remote-notebook.sh"
+alias format-namenode="/class/bin/format-namenode.sh"
+alias fix-hive="/class/bin/fixhive.sh"
+alias start-mongo="/class/bin/start-mongo.sh"
+alias stop-mongo="/class/bin/stop-mongo.sh"
+alias mongo-status="/class/bin/mongo-status.sh"
+alias start-zookeeper="/class/bin/start-zookeeper.sh"
+alias stop-zookeeper="/class/bin/stop-zookeeper.sh"
+alias zookeeper-status="/class/bin/zookeeper-status.sh"
+alias start-hbase="/usr/local/hbase/bin/start-hbase.sh"
+alias stop-hbase="/usr/local/hbase/bin/stop-hbase.sh"
+alias start-cassandra="/class/bin/start-cassandra.sh"
+alias stop-cassandra="/class/bin/stop-cassandra.sh"
+alias cqlsh="/class/bin/cqlsh.sh"
+alias start-kafka="/class/bin/start-kafka.sh"
+alias stop-kafka="/class/bin/stop-kafka.sh"
+alias kafka-status="/class/bin/kafka-status.sh"
+
+#alias start-remote-notebook="cd /class && jupyter notebook --allow-root --no-browser"
+alias orange="python -m Orange.canvas"
+
+function reload {
+   source /home/student/.bashrc
+}
+
+function hist {
+   if [ -z "$1"]; then
+      history
+   else
+      history | grep $1
+   fi
+}
+
+function hls {
+   hadoop fs -ls $@
+}
+
+function hput {
+   hadoop fs -put $@
+}
+
+function hget {
+   hadoop fs -get $@
+}
+
+function hmkdir {
+   hadoop fs -mkdir $@
+}
+
+function hrm {
+   hadoop fs -rm $@
+}
+
+function hmv {
+   hadoop fs -mv $@
+}
+
+function hmvr {
+   hadoop fs -mv -r $@
+}
+
+function hcp {
+   hadoop fs -cp $@
+}
+
+function hcpr {
+   hadoop fs -cp -r $@
+}
+
+function hcat {
+   hadoop fs -cat $@
+}
+
+alias myip=/home/student/myip.sh
+export GITPROJECT="SparkProgram"
+
+#export BROWSER=google-chrome
+alias chrome="google-chrome --no-sandbox"
+
+# the following alias is for VMWare VM's and does nothing in the GCP VM
+#alias mount-host="vmhgfs-fuse .host:/host /mnt/hgfs/host -o -uid=1000"
+
+#export CASSANDRA1=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cassandra1`
+#alias cqlsh="docker run -it --network network1 --rm cassandra cqlsh cassandra1"
+#alias start-cassandra="docker run --name cassandra1 --network network1 -d cassandra"
+#alias stop-cassandra="docker rm -f cassandra1"
+
+export HADOOP_HOME=/usr/local/hadoop
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_CONF_HOME=$HADOOP_HOME/etc/hadoop
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export YARN_CONF_HOME=$HADOOP_CONF_HOME
+export PDSH_RCMD_TYPE=ssh
+#export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export SPARK_HOME=/usr/local/spark
+#export PATH=$PATH:$SPARK_HOME/bin
+#export PYSPARK_PYTHON=/home/student/anaconda3/bin/python
+#export PYSPARK_DRIVER_PYTHON=ipython
+export PYSPARK_PYTHON=/usr/bin/python3.7
+export PYSPARK_DRIVER_PYTHON=/usr/bin/python3.7
+export PYSPARK_DRIVER_PYTHON_OPTS=
+
+export SPARK_LOCAL_IP=127.0.0.1
+export SPARK_MASTER_LOCAL=127.0.0.1
+
+export KAFKA_HOME=/usr/local/kafka
+export KAFKA_COURSE_HOME=/home/student/ROI/roi_kafka/kafka
+export PATH=$PATH:$KAFKA_HOME/bin:$KAFKA_COURSE_HOME/bin
+export HBASE_HOME=/usr/local/hbase
+export PATH=$PATH:$HBASE_HOME/bin
+
