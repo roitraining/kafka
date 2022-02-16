@@ -1,6 +1,7 @@
 #! /usr/bin/python3
-
+# pip install avro-python3
 # pip install avro-json-serializer
+# pip install mysql-connector-python
 import io
 import uuid
 import argparse
@@ -38,22 +39,23 @@ def insert_sql(event):
    cn.commit()
 
 def consume(**kvargs):
+   print(kvargs)
    servers = kvargs['bootstrap_servers']
    if ',' in servers:
-      args['bootstrap_servers'] = servers.split(',')
+      kvargs['bootstrap_servers'] = servers.split(',')
    else:
-      args['bootstrap_servers'] = [servers]
+      kvargs['bootstrap_servers'] = [servers]
    
-   topics = args['topics']
+   topics = kvargs['topics']
    if ',' in topics:
       topics = topics.split(',')
    else:
       topics = [topics]
 
-   del args['topics']
+   del kvargs['topics']
    
-   print(topics, args)
-   consumer = KafkaConsumer(*topics, **args)
+   print(topics, kvargs)
+   consumer = KafkaConsumer(*topics, **kvargs)
 
    print("consumer = ", consumer)
 
@@ -94,6 +96,7 @@ def main():
 
    del args['sql']
 
+   print(args)
    consume(**args)
 
 if __name__ == '__main__':

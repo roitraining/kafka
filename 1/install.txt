@@ -27,3 +27,12 @@ pip install docker
 pip install pyspark
 
 
+# thrift server for hbase
+sudo apt-get install libboost-dev libboost-test-dev libboost-program-options-dev libevent-dev automake libtool flex bison pkg-config g++ libssl-dev  
+wget https://dlcdn.apache.org/thrift/0.16.0/thrift-0.16.0.tar.gz
+tar -xvzf thrift-0.16.0.tar.gz  
+./configure  
+make  
+sudo make install  
+thrift -version 
+

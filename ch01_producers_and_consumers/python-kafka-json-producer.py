@@ -1,4 +1,4 @@
-#! /usr/bin/python3.7
+#! /usr/bin/python3
 # pip install kafka-python
 from kafka import KafkaProducer
 import json

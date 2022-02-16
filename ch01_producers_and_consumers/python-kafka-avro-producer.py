@@ -1,5 +1,7 @@
-#! /usr/bin/python
-
+#! /usr/bin/python3
+# pip install avro
+# pip install avro-python3
+# pip install mysql
 from kafka import KafkaProducer
 import json
 import random
@@ -24,7 +26,7 @@ def json_to_avro(msg, schema):
     data = buf.read()
     return data
 
-stock_schema = avro.schema.Parse(open("stock.avsc", "rb").read())
+stock_schema = avro.schema.parse(open("stock.avsc", "rb").read())
 
 def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks'):
     producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
@@ -42,7 +44,7 @@ def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks'):
             key = uuid.uuid4()
             print('key:', key, 'msg:', msg)
             avro_msg = json_to_avro(msg, stock_schema)
-            producer.send(kafka_topic, key=key.bytes, value=avro_msg)
+            producer.send(topic, key=key.bytes, value=avro_msg)
             time.sleep(producer_sleep_time)
 
     thread_list = [threading.Thread(target=stock_message, args=(i,)) for i in range(len(stocks))]
