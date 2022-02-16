@@ -1,0 +1,10 @@
+create 'test1','test2'
+put 'test1', 'row1', 'test2:col1', 'one'
+scan 'test1'
+disable 'test1'
+drop 'test1'
+
+
+# start-zookeeper
+# start-hadoop
+# start-hbase
