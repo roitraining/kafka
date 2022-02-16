@@ -1,3 +1,5 @@
+create user 'python'@'localhost' identified by 'python';
+
 create database stocks;
 use stocks;
 create table trades
