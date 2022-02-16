@@ -9,7 +9,8 @@ import os
 
 producer_sleep_time = 4
 stocks = ['AAPL', 'GOOG', 'MSFT']
-kafka_topic='stocks'
+
+kafka_topic='jsonstocks'
 
 key = 1
 def produce_json_data():
