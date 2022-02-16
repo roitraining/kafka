@@ -259,4 +259,5 @@ export KAFKA_COURSE_HOME=/home/student/ROI/roi_kafka/kafka
 export PATH=$PATH:$KAFKA_HOME/bin:$KAFKA_COURSE_HOME/bin
 export HBASE_HOME=/usr/local/hbase
 export PATH=$PATH:$HBASE_HOME/bin
+export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip:$PYTHONPATH
 

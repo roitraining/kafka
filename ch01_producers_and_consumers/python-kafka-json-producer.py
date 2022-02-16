@@ -1,5 +1,8 @@
 #! /usr/bin/python3
 # pip install kafka-python
+# /usr/local/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic json-stocks 
+# /usr/local/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list 
+
 from kafka import KafkaProducer
 import json
 import random
@@ -10,7 +13,7 @@ import os
 producer_sleep_time = 4
 stocks = ['AAPL', 'GOOG', 'MSFT']
 
-kafka_topic='jsonstocks'
+kafka_topic='json-stocks'
 
 key = 1
 def produce_json_data():

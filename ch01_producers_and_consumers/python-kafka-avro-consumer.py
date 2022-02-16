@@ -74,7 +74,7 @@ def main():
    parser.add_argument(
       '-b', '--bootstrap_servers', required=False, type=str, default='localhost:9092')
    parser.add_argument(
-      '-t', '--topics', required=False, type=str, default='avro_stocks')
+      '-t', '--topics', required=False, type=str, default='avro-stocks')
    parser.add_argument(
       '-g', '--group_id', required=False, type=str, default='stock-group')
    parser.add_argument(
