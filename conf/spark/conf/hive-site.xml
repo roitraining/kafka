@@ -1,0 +1,55 @@
+<configuration>
+   <property>
+      <name>javax.jdo.option.ConnectionURL</name>
+      <value>jdbc:mysql://localhost/metastore?useSSL=false</value>
+      <description>metadata is stored in a MySQL server</description>
+   </property>
+   <property>
+      <name>javax.jdo.option.ConnectionDriverName</name>
+      <value>com.mysql.jdbc.Driver</value>
+      <description>MySQL JDBC driver class</description>
+   </property>
+   <property>
+      <name>javax.jdo.option.ConnectionUserName</name>
+      <value>hiveuser</value>
+      <description>user name for connecting to mysql server</description>
+   </property>
+   <property>
+      <name>javax.jdo.option.ConnectionPassword</name>
+      <value>hivepassword</value>
+      <description>password for connecting to mysql server</description>
+   </property>
+   <property>
+       <name>hive.server2.thrift.min.worker.threads</name>
+       <value>5</value>
+   </property>
+   <property>
+       <name>hive.server2.thrift.max.worker.threads</name>
+       <value>500</value>
+   </property>
+   <property>
+       <name>hive.server2.thrift.port</name>
+       <value>10000</value>
+   </property>
+   <property>
+       <name>hive.server2.thrift.bind.host</name>
+       <value>localhost</value>
+   </property>
+   <property>
+       <name>hive.metastore.sasl.enabled</name>
+       <value>false</value>
+   </property>
+   <property>
+       <name>hive.server2.enable.doAs</name>
+       <value>false</value>
+   </property>
+   <property>
+       <name>hive.server2.authentication</name>
+       <value>NONE</value>
+   </property>
+   <property>
+       <name>hive.server2.authentication</name>
+       <value>NONE</value>
+   </property>
+</configuration>
+
