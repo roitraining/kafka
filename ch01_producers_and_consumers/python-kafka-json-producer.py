@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 # pip install kafka-python
-# kafka-topics.sh --bootstrap-server localhost:9092 --create --topic json-stocks
+# kafka-topics.sh --bootstrap-server localhost:9092 --create --topic stocks-json
 # kafka-topics.sh --bootstrap-server localhost:9092 --list
 
 from kafka import KafkaProducer
@@ -50,7 +50,7 @@ def main():
    parser.add_argument(
       '-b', '--bootstrap_servers', required=False, type=str, default='localhost:9092')
    parser.add_argument(
-      '-t', '--topic', required=False, type=str, default='json-stocks')
+      '-t', '--topic', required=False, type=str, default='stocks-json')
 
    args = parser.parse_args()
    print(args)

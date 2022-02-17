@@ -12,7 +12,7 @@ from pyspark.streaming.kafka import KafkaUtils
 
 # Kafka variables
 brokers = 'localhost:9092'
-kafka_topic = 'stocks'
+kafka_topic = 'stocks-json'
 receiver_sleep_time = 4
 
 # Connect to Spark 

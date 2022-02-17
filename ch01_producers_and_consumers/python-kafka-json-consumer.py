@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 from kafka import KafkaConsumer
-consumer = KafkaConsumer('json-stocks')
+consumer = KafkaConsumer('stocks-json')
 print("consumer = ", consumer)
 for event in consumer:
    print(event)

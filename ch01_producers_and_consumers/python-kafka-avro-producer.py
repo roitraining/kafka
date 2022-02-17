@@ -4,7 +4,7 @@
 # pip install avro-python3
 # pip install mysql
 
-# kafka-topics.sh --bootstrap-server localhost:9092 --create --topic avro-stocks
+# kafka-topics.sh --bootstrap-server localhost:9092 --create --topic stocks-
 # kafka-topics.sh --bootstrap-server localhost:9092 --list
 
 from kafka import KafkaProducer
@@ -32,7 +32,7 @@ def json_to_avro(msg, schema):
     data = buf.read()
     return data
 
-def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'avro_stocks'):
+def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-avro'):
     producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
     producer_sleep_time = 4
     stocks = ['AAPL', 'GOOG', 'MSFT']
@@ -67,7 +67,7 @@ def main():
    parser.add_argument(
       '-b', '--bootstrap_servers', required=False, type=str, default='localhost:9092')
    parser.add_argument(
-      '-t', '--topic', required=False, type=str, default='avro-stocks')
+      '-t', '--topic', required=False, type=str, default='stocks-avro')
 
    args = parser.parse_args()
    print(args)

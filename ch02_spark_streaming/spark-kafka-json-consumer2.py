@@ -12,7 +12,7 @@ sys.path.append('/class')
 
 # Kafka variables
 brokers = 'localhost:9092'
-kafka_topic = 'avro-stocks'
+kafka_topic = 'stocks-json'
 receiver_sleep_time = 4
 
 # Connect to Spark 
