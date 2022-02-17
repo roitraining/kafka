@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 spark-kafka-json-consumer.py
+# pyspark --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 
 
 # ,org.apache.spark:spark-avro_2.12:3.2.1
 # https://sparkbyexamples.com/spark/spark-streaming-consume-and-produce-kafka-messages-in-avro-format/
@@ -30,23 +31,29 @@ df: DataFrame = (spark.readStream
 #    .option("startingOffsets", "earliest")
     .load()
     )
-df.createOrReplaceTempView('table')
-df1 = spark.sql("""SELECT 'new data', * from table""")
-#df1 = df.selectExpr("UPPER(CAST(value AS STRING))")
+
+# df.createOrReplaceTempView('table')
+# df1 = spark.sql("""SELECT 'new data', * from table""")
+df1 = df.selectExpr("UPPER(CAST(value AS STRING))")
+
+
+
 
 # df2 = df.writeStream \
 #     .outputMode("append") \
 #     .format("console") \
 #     .start()
 
-df2 = (df.writeStream.format("kafka")
+df2 = (df1.writeStream.format("kafka")
           .option("kafka.bootstrap.servers", brokers) 
           .option("topic","classroom")
           .option("checkpointLocation", "/tmp")
           .start()
-          
         )
 df2.awaitTermination()
+
+#df1.writeStream.outputMode("append").format("console").start()
+
 
 
 
