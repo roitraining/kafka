@@ -1,7 +1,12 @@
 #! /usr/bin/python3
+# pip install kafka-python
 # pip install avro
 # pip install avro-python3
 # pip install mysql
+
+# kafka-topics.sh --bootstrap-server localhost:9092 --create --topic avro-stocks
+# kafka-topics.sh --bootstrap-server localhost:9092 --list
+
 from kafka import KafkaProducer
 import json
 import random
@@ -16,6 +21,7 @@ import avro.io
 import avro.schema
 import avro.datafile
 
+stock_schema = avro.schema.parse(open("stock.avsc", "rb").read())
 
 def json_to_avro(msg, schema):
     buf = io.BytesIO()
@@ -26,9 +32,7 @@ def json_to_avro(msg, schema):
     data = buf.read()
     return data
 
-stock_schema = avro.schema.parse(open("stock.avsc", "rb").read())
-
-def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks'):
+def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'avro_stocks'):
     producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
     producer_sleep_time = 4
     stocks = ['AAPL', 'GOOG', 'MSFT']

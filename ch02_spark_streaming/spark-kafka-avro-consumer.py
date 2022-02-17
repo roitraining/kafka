@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+# spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 spark-kafka-avro-consumer.py
+
 # spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3 spark-kafka-avro-consumer.py
 
 # https://sparkbyexamples.com/spark/spark-streaming-consume-and-produce-kafka-messages-in-avro-format/
@@ -19,6 +21,7 @@ import avro.datafile
 #import spark.sql.avro
 
 from pyspark.sql.avro.functions import from_avro, to_avro
+from pyspark.sql import DataFrame
 
 # Kafka variables
 brokers = 'localhost:9092'
@@ -31,15 +34,40 @@ stock_schema = avro.schema.parse(open("stock.avsc", "rb").read())
 from initspark import initspark
 sc, spark, config = initspark()
 
-df = spark \
-    .read \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", brokers) \
-    .option("subscribe", kafka_topic) \
+df: DataFrame = (spark.readStream 
+    .format("kafka") 
+    .option("kafka.bootstrap.servers", brokers) 
+    .option("subscribe", kafka_topic) 
+    .option("startingOffsets", "earliest")
     .load()
+    )
+#df1 = df.selectExpr("CAST(value AS STRING)")
+#print(type(df), type(df1))
 
-df2 = df.select(from_avro("value", stock_schema).alias("value"))
-df2.show(5)
+df2 = df.writeStream.queryName("df2").format("memory").start()
+df3 = spark.sql("select * from df2")
+df3.show()
+
+#print(type(df), dir(df))
+
+#df2 = df.writeStream.format("console").start()
+
+#df3 = df.foreach(print).writeStream.format("console").start()
+
+#df2.awaitTermination()
+#df3.awaitTermination()
+
+#df2: DataFrame = df.foreach(print) 
+#.writeStream.format("console").start()
+#print(type(df2), dir(df2), dir(df2.collect))
+
+#df2.awaitTermination()
+
+#stocks.foreachRDD(lambda rdd: rdd_to_df(rdd))
+
+#print(df.take(5))
+# df2 = df.select(from_avro("value", stock_schema).alias("value"))
+# df2.show(5)
 
 
 """
@@ -78,3 +106,6 @@ ssc.awaitTermination()
 
 
 """                    
+
+
+#https://mtpatter.github.io/bilao/notebooks/html/01-spark-struct-stream-kafka.html

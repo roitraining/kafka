@@ -4,10 +4,15 @@
 pip install --upgrade pip
 pip install --ignore-installed pyzmq
 pip install --ignore-installed terminado
-pip install --ignore-installed terminado
+pip install --ignore-installed pexpect
 pip install jupyterlab jupyter_client
 pip install --upgrade jupyter_client
 # jupyter lab --allow-root
+
+# https://towardsdatascience.com/how-to-connect-to-jupyterlab-remotely-9180b57c45bb
+jupyter server --generate-config
+jupyter server password
+# password student
 
 pip uninstall numpy
 pip install numpy
