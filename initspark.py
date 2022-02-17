@@ -11,6 +11,7 @@ if not 'SPARK_HOME' in os.environ and not os.environ['SPARK_HOME'] in sys.path:
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession, SQLContext
 from pyspark.sql.types import *
+from pyspark.sql.functions import *
 
 packages = ['org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
            ,'org.mongodb.spark:mongo-spark-connector_2.11:2.4.3'
@@ -32,10 +33,12 @@ def initspark(appname = "Test", servername = "local"
     )
     # print(f'Cassandra {cassandra} user: {cassandra_user} pw: {cassandra_password}')
     sc = SparkContext(conf = conf)
-    spark = SparkSession.builder.appName(appname) \
-    .config("spark.mongodb.input.uri", mongo) \
-    .config("spark.mongodb.output.uri", mongo) \
+    spark = (SparkSession.builder.appName(appname) 
+    .config("spark.mongodb.input.uri", mongo) 
+    .config("spark.mongodb.output.uri", mongo) 
+    .config("spark.jars", "/usr/share/java/mysql-connector-java.jar")
     .enableHiveSupport().getOrCreate()
+    )
     sc.setLogLevel("WARN")
     print ('pyspark initialized')
     return sc, spark, conf
