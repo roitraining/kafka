@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.1.1,org.mongodb.spark:mongo-spark-connector_2.11:2.4.3 receiver1.py
+# spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.1.1,org.mongodb.spark:mongo-spark-connector_2.12:3.0.1 receiver1.py
 
 import os, sys, json
 os.environ['PYSPARK_PYTHON'] = '/usr/bin/python3'
