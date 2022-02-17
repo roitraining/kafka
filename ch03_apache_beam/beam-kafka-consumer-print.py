@@ -10,10 +10,9 @@ import typing
 
 
 brokers = 'localhost:9092'
-brokers = '34.66.53.122:9092'
 
-kafka_topic = 'stocks'
-kafka_topic = 'stocks2'
+kafka_topic = 'stocks-avro'
+#kafka_topic = 'stocks2'
 
 def convert_kafka_record_to_dictionary(record):
     # the records have 'value' attribute when --with_metadata is given
@@ -37,7 +36,7 @@ def convert_kafka_record_to_dictionary(record):
     return output
 
 def printit(x):
-  print('x')
+  print('x', x)
 
 def log(stock):
   logging.info(stock)
@@ -47,7 +46,7 @@ def log(stock):
   # else:
   #   logging.info('error')
 
-options = PipelineOptions(
+options = PipelineOptions()
 #      runner = "SparkRunner"
 #      runner = "PortableRunner"
 #      runner = "FlinkRunner"
@@ -57,7 +56,7 @@ options = PipelineOptions(
       #, checkpointing_interval=1000
       #, checkpointingInterval=30000, env="dev"
 #      environment_type = "DOCKER"
-  )
+#  )
 
 kafka_config = {
                   'bootstrap.servers': brokers
@@ -65,10 +64,24 @@ kafka_config = {
 
 with beam.Pipeline(options = options) as p:
     (p
-      # | 'Read from Kafka' >> ReadFromKafka(consumer_config = kafka_config
-      #       , topics=[kafka_topic] , with_metadata = True)
-    | beam.Create(['a','b','c'])
-    | beam.Map(log)
+      | 'Read from Kafka' >> ReadFromKafka(consumer_config=
+                                {
+                                 'bootstrap.servers': brokers
+                                }
+                            , topics=[kafka_topic], with_metadata = True)
+     #| 'Convert dict to byte string' >> beam.Map(lambda x: (b'', json.dumps(x).encode('utf-8')))
+     | beam.Map(lambda x : (0,x)).with_output_types(typing.Tuple[bytes, bytes])
+      | WriteToKafka(producer_config={'bootstrap.servers': brokers}, topic="classroom")
+        #      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
+    )
+
+# with beam.Pipeline(options = options) as p:
+#     (p
+#       # | 'Read from Kafka' >> ReadFromKafka(consumer_config = kafka_config
+#       #       , topics=[kafka_topic] , with_metadata = True)
+#     # | beam.Create(['a','b','c'])
+#     | beam.Map(printit)
+# #    | beam.Map(log)
 #       | 'Read from Kafka' >> ReadFromKafka(consumer_config=
 #                                 {
 #                                  'bootstrap.servers': brokers
@@ -76,14 +89,14 @@ with beam.Pipeline(options = options) as p:
 # #                                ,'session.timeout.ms': '12000'
 #                                 }
 #                             , topics=[kafka_topic], with_metadata = True)
-#        | beam.Map(print)
-#       | beam.Map(lambda record: convert_kafka_record_to_dictionary(record))                            
-      # | beam.FlatMap(lambda stock: log_stock(stock))
-#       | beam.WindowInto(beam.window.FixedWindows(3))
-#      | 'Print' >> beam.Map(lambda x : print('test', x))
-#      | WriteToKafka(producer_config={'bootstrap.servers': brokers}, topic=kafka_topic2)
-        #      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
-    )
+# #        | beam.Map(print)
+# #       | beam.Map(lambda record: convert_kafka_record_to_dictionary(record))                            
+#       # | beam.FlatMap(lambda stock: log_stock(stock))
+# #       | beam.WindowInto(beam.window.FixedWindows(3))
+# #      | 'Print' >> beam.Map(lambda x : print('test', x))
+# #      | WriteToKafka(producer_config={'bootstrap.servers': brokers}, topic=kafka_topic2)
+#         #      | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
+#     )
 
 # def run_pipeline():
 #   options = PipelineOptions(

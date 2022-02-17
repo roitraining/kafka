@@ -5,14 +5,16 @@ import typing, json
 from apache_beam.options.pipeline_options import PipelineOptions
 
 brokers = 'localhost:9092'
-kafka_topic = 'stocks'
+kafka_topic = 'classroom'
 
-options = PipelineOptions(
-      runner = "FlinkRunner"
-      #, streaming="true"
-      , flink_master="localhost:8081"
-      , environment_type="LOOPBACK"
-  )
+# options = PipelineOptions(
+#       runner = "FlinkRunner"
+#       #, streaming="true"
+#       , flink_master="localhost:8081"
+#       , environment_type="LOOPBACK"
+#   )
+
+options = PipelineOptions()
 
 def run_pipeline(options = options):
   with beam.Pipeline() as p:
