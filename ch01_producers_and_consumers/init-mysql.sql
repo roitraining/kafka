@@ -1,4 +1,5 @@
 create user 'python'@'localhost' identified by 'python';
+grant all privileges on *.* to 'python'@'localhost' with grant option;
 
 create database stocks;
 use stocks;

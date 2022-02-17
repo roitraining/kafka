@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 # Not working because of a driver issue
 
-# spark-submit --jars /usr/share/java/mysql-connector-java.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 spark-kafka-avro-sql.py
+# spark-submit --jars /usr/share/java/mysql-connector-java.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 3-spark-kafka-avro-sql.py
 # pyspark --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1
 
 import os, sys, json, io
 os.environ['PYSPARK_PYTHON'] = '/usr/bin/python3'
 os.environ['PYSPARK_DRIVER_PYTHON'] = '/usr/bin/python3'
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--driver-class-path /usr/share/java/mysql-connector-java.jar --jars /usr/share/java/mysql-connector-java.jar
 sys.path.append('/class')
 
 #from pyspark.streaming import StreamingContext
@@ -55,16 +54,21 @@ df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_
 # FROM trades
 # """)
 
-mysql_url = "jdbc:mysql://localhost:3306/stocks"
+mysql_url = "jdbc:mysql://127.0.0.1:3306/stocks"
 # mysql_table             
 mysql_login = {
      "user": "python",
-     "password": "python"
+     "password": "student"
      }
 
+
 def foreach_batch_function(df, epoch_id):
-    mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
-    df.write.jdbc(mysql_url, table = 'trades')
+    print('foreach_batch')
+    cnt = df.count()
+    if cnt > 0:
+        print('count:', cnt)
+        mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
+        df.write.mode('append').jdbc(mysql_url, table = 'trades').save()
 
 query = df3.writeStream.foreachBatch(foreach_batch_function)
 query.start().awaitTermination()

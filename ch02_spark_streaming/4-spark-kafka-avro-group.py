@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 # Not working because of a driver issue
 
-# spark-submit --jars /usr/share/java/mysql-connector-java.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 spark-kafka-avro-sql.py
+# spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 4-spark-kafka-avro-group.py
 # pyspark --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1
 
 import os, sys, json, io
 os.environ['PYSPARK_PYTHON'] = '/usr/bin/python3'
 os.environ['PYSPARK_DRIVER_PYTHON'] = '/usr/bin/python3'
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--driver-class-path /usr/share/java/mysql-connector-java.jar --jars /usr/share/java/mysql-connector-java.jar
 sys.path.append('/class')
 
 #from pyspark.streaming import StreamingContext
@@ -46,8 +45,18 @@ df1 = df.withColumn('value', from_avro("value", stock_schema))
 df2 = df1.select(*df.columns, col("value.*")).drop("value")
 
 # pick the columns we want to write to sql
-df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_time", "symbol", "price")
+df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_time", "symbol", "price", "quantity")
 
+
+
+#df4 = df3.select("symbol","quantity").groupBy(window("symbol", "10 seconds")).sum("quantity")
+df4 = (df3.select("kafka_timestamp", "symbol","quantity")
+        .withWatermark("kafka_timestamp", "10 seconds") \
+        .groupBy(window("kafka_timestamp", "10 seconds"))
+        .sum("quantity")
+        )
+
+df4.writeStream.outputMode("append").format("console").start().awaitTermination()
 # alternatively, use spark sql
 # df2.createOrReplaceTempView('trades')
 # df3 = spark.sql("""
@@ -55,16 +64,20 @@ df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_
 # FROM trades
 # """)
 
-mysql_url = "jdbc:mysql://localhost:3306/stocks"
-# mysql_table             
-mysql_login = {
-     "user": "python",
-     "password": "python"
-     }
+# def foreach_batch_function(df, epoch_id):
+#     print('foreach_batch')
+#     cnt = df.count()
+#     if cnt > 0:
+#         print('count:', cnt)
+#         datafile.writeStream.outputMode("append").format("console").start()
 
-def foreach_batch_function(df, epoch_id):
-    mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
-    df.write.jdbc(mysql_url, table = 'trades')
+# query = df3.writeStream.foreachBatch(foreach_batch_function)
+# query.start().awaitTermination()
 
-query = df3.writeStream.foreachBatch(foreach_batch_function)
-query.start().awaitTermination()
+# df3.writeStream.outputMode("append").format("console").start().awaitTermination()
+
+# val resultDF = initDF.select("Name", "Date", "Open", "High", "Low")
+#   .groupBy(window($"Date", "10 days"), $"Name")
+#   .agg(max("High").as("Max"))
+#   .orderBy($"window.start")
+

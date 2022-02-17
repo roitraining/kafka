@@ -7,7 +7,6 @@
 import os, sys, json, io
 os.environ['PYSPARK_PYTHON'] = '/usr/bin/python3'
 os.environ['PYSPARK_DRIVER_PYTHON'] = '/usr/bin/python3'
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--driver-class-path /usr/share/java/mysql-connector-java.jar --jars /usr/share/java/mysql-connector-java.jar
 sys.path.append('/class')
 
 #from pyspark.streaming import StreamingContext
@@ -59,11 +58,11 @@ mysql_url = "jdbc:mysql://localhost:3306/stocks"
 # mysql_table             
 mysql_login = {
      "user": "python",
-     "password": "python"
+     "password": "student"
      }
 
 def foreach_batch_function(df, epoch_id):
-    mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
+    mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=student"
     df.write.jdbc(mysql_url, table = 'trades')
 
 query = df3.writeStream.foreachBatch(foreach_batch_function)
