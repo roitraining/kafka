@@ -70,7 +70,7 @@ print('df4', df4)
 df5 = df4.select(to_json("value").alias("value"))
 print('df5', df5)
 
-df6 = df5.select(to_avro("value").alias("value"))
+df6 = df5.select(to_avro("value", stock_schema).alias("value"))
 print('df6', df6)
 
 def foreach_batch_to_sql(df, epoch_id):
