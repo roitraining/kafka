@@ -49,7 +49,7 @@ def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-avro
                 'quantity': random.randint(10, 1000)
             }
             key = uuid.uuid4()
-            print('key:', key, 'msg:', msg)
+            print('avro producer -', 'key:', key, 'msg:', msg)
             avro_msg = json_to_avro(msg, stock_schema)
             producer.send(topic, key=key.bytes, value=avro_msg)
             time.sleep(producer_sleep_time)

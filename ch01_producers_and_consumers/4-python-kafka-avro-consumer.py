@@ -63,7 +63,12 @@ def consume(**kvargs):
    for event in consumer:
       try:
          if not cn:
-            print(uuid.UUID(bytes=event.key), event.timestamp, avro_to_dict(event.value))
+            try:
+               print('avro consumer -', uuid.UUID(bytes=event.key), event.timestamp, '\n', avro_to_dict(event.value))
+            except:
+               pass
+            print(event)
+            print('-'*80)
          else:
             insert_sql(event)
       except:
@@ -102,3 +107,13 @@ def main():
 
 if __name__ == '__main__':
    main()
+
+
+
+# ConsumerRecord(topic='stocks-avro', partition=0, offset=7012, timestamp=1645157200910, timestamp_type=0, key=b'\\D\xdd\xe5\xab\xfbFM\xb5\x86\x14l\xd1\x9f6\x15', value=b'{2022-02-18 04:06:40, GOOG, 245.81, 527}', headers=[], checksum=None, serialized_key_size=16, serialized_value_size=40, serialized_header_size=-1)
+# ConsumerRecord(topic='stocks-avro', partition=0, offset=7021, timestamp=1645157212934, timestamp_type=0, key=b'A\x10\xc4\x90\xeb\xaaIF\x9b\xe7\xee\xbb\x8f\xcc}\x91', value=b'{2022-02-18 04:06:52, GOOG, 113.42, 709}', headers=[], checksum=None, serialized_key_size=16, serialized_value_size=40, serialized_header_size=-1)
+
+
+# avro consumer - de7c34e9-4729-4c8e-bb0b-597ad78f05bb 1645157339013 {'event_time': '2022-02-18 04:08:59', 'symbol': 'AAPL', 'price': 175.72000122070312, 'quantity': 170}
+# ConsumerRecord(topic='stocks-avro', partition=0, offset=7069, timestamp=1645157339013, timestamp_type=0, key=b'\xde|4\xe9G)L\x8e\xbb\x0bYz\xd7\x8f\x05\xbb', value=b'Obj\x01\x04\x14avro.codec\x08null\x16avro.schema\xca\x03{"type": "record", "name": "Stock", "namespace": "example.avro", "fields": [{"type": "string", "name": "event_time"}, {"type": "string", "name": "symbol"}, {"type": "float", "name": "price"}, {"type": "int", "name": "quantity"}]}\x00\xad\x9d,%p\xbeX/m+\x9b\xe4\x98r\x1a\xde\x02>&2022-02-18 04:08:59\x08AAPLR\xb8/C\xd4\x02\xad\x9d,%p\xbeX/m+\x9b\xe4\x98r\x1a\xde', headers=[], checksum=None, serialized_key_size=16, serialized_value_size=330, serialized_header_size=-1)
+# ConsumerRecord(topic='stocks-avro', partition=0, offset=7111, timestamp=1645157396681, timestamp_type=0, key=b'j\xa2_\xf1B\xe6OA\x97\xa7\x12\xa7\xbe\xe74s', value=b'{2022-02-18 04:09:56, MSFT, 296.69, 420}', headers=[], checksum=None, serialized_key_size=16, serialized_value_size=40, serialized_header_size=-1)
