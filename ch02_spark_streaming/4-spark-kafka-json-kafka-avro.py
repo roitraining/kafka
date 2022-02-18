@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 """
-spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 3-spark-kafka-json-mysql.py
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 4-spark-kafka-json-kafka-avro.py
 
 This example will read the stream stocks-json, and just do a minor uppercase transform 
 on the data and republish them as new messages to the kafka stream classroom.
@@ -60,8 +60,18 @@ print('df2', df2)
 df3 = df2.select(*(df2.columns), col("value2.*")).drop('value2')
 print('df3', df3)
 
-# df4 = df3.withColumnRenamed('key','kafka_key').withColumnRenamed('timestamp', 'kafka_timestamp')
-# print('df4', df4)
+df3.createOrReplaceTempView('data')
+df4 = spark.sql("""
+SELECT NAMED_STRUCT('event_time', event_time, 'symbol', symbol, 'price', price, 'quantity', quantity) AS value
+FROM data
+""")
+print('df4', df4)
+
+df5 = df4.select(to_json("value").alias("value"))
+print('df5', df5)
+
+df6 = df5.select(to_avro("value").alias("value"))
+print('df6', df6)
 
 def foreach_batch_to_sql(df, epoch_id):
     cnt = df.count()
@@ -79,8 +89,8 @@ def foreach_batch_to_sql(df, epoch_id):
         mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
         df.write.mode('append').jdbc(mysql_url, table = 'trades') #.save()
 
-query = df3.writeStream.foreachBatch(foreach_batch_to_sql)
-query.start().awaitTermination()
+# query = df3.writeStream.foreachBatch(foreach_batch_to_sql)
+# query.start().awaitTermination()
 
 def write_console(df):
     query = (df.writeStream 
@@ -101,5 +111,5 @@ def publish_to_kafka(df, brokers, topic):
             )
     return query            
 
-# query = publish_to_kafka(df1, brokers, 'classroom')
-# query.start().awaitTermination()
+query = publish_to_kafka(df6, brokers, 'stocks-avro')
+query.start().awaitTermination()
