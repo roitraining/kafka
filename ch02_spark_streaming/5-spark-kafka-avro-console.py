@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 """
-spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 4-spark-kafka-json-kafka-avro.py
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 5-spark-kafka-avro-console.py
 
 This example will read the stream stocks-json, and just do a minor uppercase transform 
 on the data and republish them as new messages to the kafka stream classroom.
@@ -23,7 +23,7 @@ sys.path.append('/class')
 
 # Kafka variables
 brokers = 'localhost:9092'
-kafka_topic = 'stocks-json'
+kafka_topic = 'stocks-avro'
 receiver_sleep_time = 4
 
 # Connect to Spark 
@@ -48,10 +48,22 @@ print('df', df)
 
 # df.createOrReplaceTempView('table')
 # df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
+#df1 = df.select(col("value").alias('value'))
+#df1 = df.select(col("value").alias("old"), from_avro(col("value"), stock_schema, options = {"mode":"PERMISSIVE"}).alias('value'))
+#df1 = df.withColumn("value", col("value").cast(StringType()))
+# df1 = df.withColumn("value", col("value").cast(StringType()))
+# print('df1', df1)
+# df2 = df1.select(*df1.columns, from_json(df1.value, stock_struct).alias("value2")).drop("value")
+# print('df2', df2)
 
-df1 = df.select("key", expr("CAST(value AS STRING) as value"))
-print('df1', df1)
+df2 = df.select("key", from_avro(df.value, stock_schema, options = {"mode":"PERMISSIVE"}).alias("value"))
+print('df2', df2)
 
+# flatten the struct to a normal DataFrame
+df3 = df2.select(*(df2.columns), col("value.*")).drop("value")
+print('df3', df3)
+
+'''
 # cast the string json to a struct
 df2 = df1.select(*df1.columns, from_json(df1.value, stock_struct).alias("value2")).drop('value')
 print('df2', df2)
@@ -62,16 +74,17 @@ print('df3', df3)
 
 df3.createOrReplaceTempView('data')
 df4 = spark.sql("""
-SELECT key, NAMED_STRUCT('event_time', event_time, 'symbol', symbol, 'price', price, 'quantity', quantity) AS value
+SELECT NAMED_STRUCT('event_time', event_time, 'symbol', symbol, 'price', price, 'quantity', quantity) AS value
 FROM data
 """)
 print('df4', df4)
 
-# df5 = df4.select("key", to_json("value").alias("value"))
-# print('df5', df5)
+df5 = df4.select(to_json("value").alias("value"))
+print('df5', df5)
 
-df6 = df4.select("key", to_avro("value", stock_schema).alias("value"))
+df6 = df5.select(to_avro("value").alias("value"))
 print('df6', df6)
+'''
 
 def foreach_batch_to_sql(df, epoch_id):
     cnt = df.count()
@@ -100,8 +113,8 @@ def write_console(df):
             )
     return query
 
-# query = write_console(df3)
-# query.start().awaitTermination()
+query = write_console(df2)
+query.start().awaitTermination()
 
 def publish_to_kafka(df, brokers, topic):
     query = (df1.writeStream.format("kafka")
@@ -111,5 +124,6 @@ def publish_to_kafka(df, brokers, topic):
             )
     return query            
 
-query = publish_to_kafka(df6, brokers, 'stocks-avro')
-query.start().awaitTermination()
+# query = publish_to_kafka(df6, brokers, 'stocks-avro')
+# query.start().awaitTermination()
+#df1 DataFrame[value2: struct<event_time:string,symbol:string,price:float,quantity:int>]

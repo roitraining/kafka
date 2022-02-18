@@ -162,6 +162,7 @@ alias cqlsh="/class/bin/cqlsh.sh"
 alias start-kafka="/class/bin/start-kafka.sh"
 alias stop-kafka="/class/bin/stop-kafka.sh"
 alias kafka-status="/class/bin/kafka-status.sh"
+alias pyspark2="/class/bin/pyspark2"
 
 #alias start-remote-notebook="cd /class && jupyter notebook --allow-root --no-browser"
 alias orange="python -m Orange.canvas"
@@ -258,6 +259,6 @@ export KAFKA_HOME=/usr/local/kafka
 export KAFKA_COURSE_HOME=/home/student/ROI/roi_kafka/kafka
 export PATH=$PATH:$KAFKA_HOME/bin:$KAFKA_COURSE_HOME/bin
 export HBASE_HOME=/usr/local/hbase
-export PATH=$PATH:$HBASE_HOME/bin
+export PATH=/class/bin/:$PATH:$HBASE_HOME/bin
 export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip:$PYTHONPATH
 
