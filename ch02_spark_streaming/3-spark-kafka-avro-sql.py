@@ -24,28 +24,37 @@ from pyspark.sql.functions import *
 
 # Kafka variables
 brokers = 'localhost:9092'
-kafka_topic = 'avro-stocks'
+kafka_topic = 'stocks-avro'
 receiver_sleep_time = 4
 stock_schema = open("stock.avsc", "r").read()
+print(stock_schema)
 
 from initspark import initspark
 sc, spark, config = initspark()
+spark.sparkContext.setLogLevel("ERROR")
 
 df: DataFrame = (spark.readStream 
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
     .option("startingOffsets", "earliest")
+    .option("failOnDataLoss", False)
+    .option("mode", "DROPMALFORMED")
     .load()
     )
 
+print(df)
 # extract the binary value of the message and convert it to the schema read from the avsc file
 df1 = df.withColumn('value', from_avro("value", stock_schema))
+print(df1)
+
 # flatten out the value struct and remove it
 df2 = df1.select(*df.columns, col("value.*")).drop("value")
+print(df2)
 
 # pick the columns we want to write to sql
 df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_time", "symbol", "price")
+print(df3)
 
 # alternatively, use spark sql
 # df2.createOrReplaceTempView('trades')
@@ -61,7 +70,6 @@ mysql_login = {
      "password": "student"
      }
 
-
 def foreach_batch_function(df, epoch_id):
     print('foreach_batch')
     cnt = df.count()
@@ -72,3 +80,14 @@ def foreach_batch_function(df, epoch_id):
 
 query = df3.writeStream.foreachBatch(foreach_batch_function)
 query.start().awaitTermination()
+
+'''
+query = (df1.writeStream 
+    .outputMode("append")
+    .format("console")
+    .option("truncate", False)
+    .option("mode", "DROPMALFORMED")
+    .start()
+    )
+query.awaitTermination()
+'''

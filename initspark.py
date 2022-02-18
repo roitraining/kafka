@@ -33,13 +33,14 @@ def initspark(appname = "Test", servername = "local"
     )
     # print(f'Cassandra {cassandra} user: {cassandra_user} pw: {cassandra_password}')
     sc = SparkContext(conf = conf)
+    sc.setLogLevel("ERROR")
     spark = (SparkSession.builder.appName(appname) 
     .config("spark.mongodb.input.uri", mongo) 
     .config("spark.mongodb.output.uri", mongo) 
     .config("spark.jars", "/usr/share/java/mysql-connector-java.jar")
     .enableHiveSupport().getOrCreate()
     )
-    sc.setLogLevel("WARN")
+    spark.sparkContext.setLogLevel("ERROR")
     print ('pyspark initialized')
     return sc, spark, conf
 

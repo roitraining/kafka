@@ -2,6 +2,7 @@
 # pip install avro-python3
 # pip install avro-json-serializer
 # pip install mysql-connector-python
+
 import io
 import uuid
 import argparse
