@@ -14,6 +14,7 @@ from pyspark.sql import *
 from pyspark.sql.utils import StreamingQueryException
 import sys
 import json
+import uuid
 from pyspark.sql.avro.functions import from_avro, to_avro
 from pyspark.sql.functions import *
 
@@ -36,6 +37,15 @@ print('stock_schema', stock_schema)
 stock_struct = spark.read.format("avro").option("avroSchema", stock_schema).load().schema
 print('stock_struct', stock_struct)
 
+# def avro_to_dict(msg):
+#    buf = io.BytesIO()
+#    buf.seek(0)
+#    buf.write(msg)
+#    x1 = avro.datafile.DataFileReader(buf, avro.io.DatumReader())
+#    x2 = next(x1)
+#    return x2
+
+
 df = (spark.readStream 
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
@@ -56,12 +66,18 @@ print('df', df)
 # df2 = df1.select(*df1.columns, from_json(df1.value, stock_struct).alias("value2")).drop("value")
 # print('df2', df2)
 
+#df1 = df.select("key", avro_to_dict(df.value).alias("value"))
+
 df2 = df.select("key", from_avro(df.value, stock_schema, options = {"mode":"PERMISSIVE"}).alias("value"))
 print('df2', df2)
 
 # flatten the struct to a normal DataFrame
 df3 = df2.select(*(df2.columns), col("value.*")).drop("value")
 print('df3', df3)
+
+#df4 = df3.select(uuid.UUID(bytes=df3.key))
+
+#df4 = df3.select(uuid.UUID(bytes=df3.key).alias("key2"), *(df2.columns))
 
 '''
 # cast the string json to a struct
@@ -113,7 +129,7 @@ def write_console(df):
             )
     return query
 
-query = write_console(df2)
+query = write_console(df3)
 query.start().awaitTermination()
 
 def publish_to_kafka(df, brokers, topic):

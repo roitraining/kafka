@@ -60,11 +60,17 @@ print('df2', df2)
 df3 = df2.select(*(df2.columns), col("value2.*")).drop('value2')
 print('df3', df3)
 
+# gather the columns you want into a struct
+df4 = df3.select("key", struct('event_time','symbol','price','quantity').alias('value'))
+
+# or SQL
+'''
 df3.createOrReplaceTempView('data')
 df4 = spark.sql("""
 SELECT key, NAMED_STRUCT('event_time', event_time, 'symbol', symbol, 'price', price, 'quantity', quantity) AS value
 FROM data
 """)
+'''
 print('df4', df4)
 
 # df5 = df4.select("key", to_json("value").alias("value"))
@@ -100,7 +106,7 @@ def write_console(df):
             )
     return query
 
-# query = write_console(df3)
+# query = write_console(df6)
 # query.start().awaitTermination()
 
 def publish_to_kafka(df, brokers, topic):
