@@ -65,6 +65,7 @@ def consume(**kvargs):
          if not cn:
             try:
                print('avro consumer -', uuid.UUID(bytes=event.key), event.timestamp, '\n', avro_to_dict(event.value))
+               print(event)
             except:
                pass
             print(event)
