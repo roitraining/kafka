@@ -1,4 +1,6 @@
+#! /usr/local/python3
 # /usr/local/flink/bin/flink run --python beam-kafka-consumer-print.py 
+# python -m pip install apache-flink
 import sys
 print(sys.version)
 import apache_beam as beam
@@ -10,7 +12,6 @@ import typing
 
 
 brokers = 'localhost:9092'
-
 kafka_topic = 'stocks-avro'
 #kafka_topic = 'stocks2'
 
@@ -62,13 +63,14 @@ kafka_config = {
                   'bootstrap.servers': brokers
                 }
 
+print('start of pipeline')
 with beam.Pipeline(options = options) as p:
     (p
       | 'Read from Kafka' >> ReadFromKafka(consumer_config=
                                 {
                                  'bootstrap.servers': brokers
                                 }
-                            , topics=[kafka_topic], with_metadata = True)
+                            , topics=[kafka_topic]) #, with_metadata = True)
      #| 'Convert dict to byte string' >> beam.Map(lambda x: (b'', json.dumps(x).encode('utf-8')))
      | beam.Map(lambda x : (0,x)).with_output_types(typing.Tuple[bytes, bytes])
       | WriteToKafka(producer_config={'bootstrap.servers': brokers}, topic="classroom")
@@ -174,8 +176,8 @@ with beam.Pipeline(options = options) as p:
 #       | 'Read from Kafka' >> beam.Create(['ab','cd','ef'])
 #       | 'Print' >> beam.Map(lambda x : print('*' * 100, '\n', x))
 #     )
-with beam.Pipeline() as p:
-    (p
-      | 'Read from Kafka' >> ReadFromKafka(consumer_config = kafka_config, topics=[kafka_topic] , with_metadata = True)
-      | beam.Map(print)
-    )
+# with beam.Pipeline() as p:
+#     (p
+#       | 'Read from Kafka' >> ReadFromKafka(consumer_config = kafka_config, topics=[kafka_topic] , with_metadata = True)
+#       | beam.Map(print)
+#     )

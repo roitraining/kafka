@@ -34,7 +34,6 @@ df = (spark.readStream
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
     .option("startingOffsets", "earliest")
-    .option("failOnDataLoss", False)
     .load()
     )
 print('df', df)
