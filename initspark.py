@@ -47,9 +47,11 @@ def initspark(appname = "Test", servername = "local"
             }
 
     print('packages', packages)
+    os.environ['PYSPARK_SUBMIT_ARGS'] = ""
+
     if packages:
-    #     pass
         if type(packages) is str and packages.lower() == 'all':
+            print("All Packages")
             os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(package_list.values()) + ' pyspark-shell'
             print(os.environ['PYSPARK_SUBMIT_ARGS'])
         elif type(packages) is list:
@@ -57,13 +59,19 @@ def initspark(appname = "Test", servername = "local"
             os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(p) + ' pyspark-shell'
             print(os.environ['PYSPARK_SUBMIT_ARGS'])
 
-
-    conf = (SparkConf().set("spark.cassandra.connection.host", cassandra)
+    if 'cassandra' in os.environ['PYSPARK_SUBMIT_ARGS']:
+        conf = (SparkConf().set("spark.cassandra.connection.host", cassandra)
+                .setAppName(appname)
+                .setMaster(servername)
+                .set("spark.cassandra.auth.username", cassandra_user) 
+                .set("spark.cassandra.auth.password", cassandra_password) 
+            )
+    else:
+        conf = (SparkConf()
             .setAppName(appname)
             .setMaster(servername)
-            .set("spark.cassandra.auth.username", cassandra_user) 
-            .set("spark.cassandra.auth.password", cassandra_password) 
-    )
+        )
+
     # print(f'Cassandra {cassandra} user: {cassandra_user} pw: {cassandra_password}')
     sc = SparkContext(conf = conf)
     sc.setLogLevel("ERROR")
