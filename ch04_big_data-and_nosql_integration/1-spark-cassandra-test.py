@@ -1,5 +1,5 @@
 # pip install cassandra-driver
-# pyspark --packages com.datastax.spark:spark-cassandra-connector_2.11:2.4.1
+# spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.0.0 1-spark-cassandra-test.py
 
 import os
 from cassandra.cluster import Cluster

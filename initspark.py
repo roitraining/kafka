@@ -13,22 +13,51 @@ from pyspark.sql import SparkSession, SQLContext
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 
-packages = ['org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
-           ,'org.mongodb.spark:mongo-spark-connector_2.11:2.4.3'
-           ,'com.datastax.spark:spark-cassandra-connector_2.11:2.5.2'
-            ,'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
-            ,'org.apache.spark:spark-avro_2.12:3.2.1'
-           ]
+# packages = [
+#            'com.datastax.spark:spark-cassandra-connector_2.12:3.0.0'
+#            ,'org.mongodb.spark:mongo-spark-connector_2.12:2.4.3'
+#            ,'org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
+#            ,'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
+#            ,'org.apache.spark:spark-avro_2.12:3.2.1'
+#            ]
 
 
+# packages = [
+#            'org.mongodb.spark:mongo-spark-connector_2.12:2.4.3'
+#            ]
 
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(packages) + ' pyspark-shell'
-#os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,com.datastax.spark:spark-cassandra-connector_2.11:2.4.0 pyspark-shell'
+
+# os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(packages) + ' pyspark-shell'
+# #os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,com.datastax.spark:spark-cassandra-connector_2.11:2.4.0 pyspark-shell'
+# print(os.environ['PYSPARK_SUBMIT_ARGS'])
+# # os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + 'com.datastax.spark:spark-cassandra-connector_2.12:3.0.0' + ' pyspark-shell'
+# # print(os.environ['PYSPARK_SUBMIT_ARGS'])
 
 def initspark(appname = "Test", servername = "local"
     , cassandra = "127.0.0.1", cassandra_user = 'cassandra', cassandra_password='student'
-    , mongo = "mongodb://127.0.0.1", mongo_user = '', mongo_password = ''):
+    , mongo = "mongodb://127.0.0.1", mongo_user = '', mongo_password = '', packages = None):
+
     print ('initializing pyspark')
+    package_list = {
+            'cassandra' : 'com.datastax.spark:spark-cassandra-connector_2.12:3.0.0'
+            , 'mongo' : 'org.mongodb.spark:mongo-spark-connector_2.12:2.4.3'
+            , 'kafka' : 'org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
+            , 'kafka-sql' : 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
+            , 'spark-avro' : 'org.apache.spark:spark-avro_2.12:3.2.1'
+            }
+
+    print('packages', packages)
+    if packages:
+    #     pass
+        if type(packages) is str and packages.lower() == 'all':
+            os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(package_list.values()) + ' pyspark-shell'
+            print(os.environ['PYSPARK_SUBMIT_ARGS'])
+        elif type(packages) is list:
+            p = [p for n,p in package_list.items() if n in packages]
+            os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(p) + ' pyspark-shell'
+            print(os.environ['PYSPARK_SUBMIT_ARGS'])
+
+
     conf = (SparkConf().set("spark.cassandra.connection.host", cassandra)
             .setAppName(appname)
             .setMaster(servername)
