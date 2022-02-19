@@ -16,7 +16,11 @@ from pyspark.sql.functions import *
 packages = ['org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
            ,'org.mongodb.spark:mongo-spark-connector_2.11:2.4.3'
            ,'com.datastax.spark:spark-cassandra-connector_2.11:2.5.2'
+            ,'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
+            ,'org.apache.spark:spark-avro_2.12:3.2.1'
            ]
+
+
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(packages) + ' pyspark-shell'
 #os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,com.datastax.spark:spark-cassandra-connector_2.11:2.4.0 pyspark-shell'

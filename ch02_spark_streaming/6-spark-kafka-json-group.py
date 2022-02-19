@@ -50,11 +50,40 @@ df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_
 
 
 #df4 = df3.select("symbol","quantity").groupBy(window("symbol", "10 seconds")).sum("quantity")
+
 df4 = (df3.select("kafka_timestamp", "symbol","quantity")
-        .withWatermark("kafka_timestamp", "10 seconds") \
-        .groupBy(window("kafka_timestamp", "10 seconds"))
-        .sum("quantity")
+        .withWatermark("kafka_timestamp", "10 seconds") 
+        .groupBy(window("kafka_timestamp", "10 seconds"), "symbol")
+        .agg(sum("quantity").alias("sum"))
         )
+print(df4)
+
+
+df4 = (df3.select("kafka_timestamp", "symbol","quantity")
+        .withWatermark("kafka_timestamp", "10 seconds") 
+        .groupBy(window("kafka_timestamp", "10 seconds")) #.alias("group"))
+        .agg(sum("quantity").alias("sum"))
+        )
+print(df4)
+
+
+def write_memory(df):
+    query = (df.writeStream 
+            .format("memory")
+            .queryName("debug")
+            .outputMode("complete")
+            .start()
+            )
+    return query
+
+query = write_console(df3)
+query.start().awaitTermination()
+
+writeStream
+    .format("memory")
+    .queryName("tableName")
+    .start()
+
 
 df4.writeStream.outputMode("append").format("console").start().awaitTermination()
 # alternatively, use spark sql
