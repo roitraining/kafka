@@ -18,6 +18,12 @@ exec $HBASE_CLI shell << EOF
     
     create "blogposts", { NAME => "post", VERSIONS => 3 } 
 
+    put "blogposts", "post1", "post:author", "AMM", 1
+    put "blogposts", "post1", "post:body", "HBase Filters", 2
+    put "blogposts", "post1", "post:head", "header.png", 3
+    put "blogposts", "post1", "post:title", "HBase Filters", 4
+
+    put "blogposts", "post1", "post:body", "HBase Filters v2 ", 5
     put 'blogposts', 'post1', 'post:author', 'AMM'
     put 'blogposts', 'post1', 'post:body', 'HTML text'
     put 'blogposts', 'post1', 'post:head', 'header.png'
@@ -86,5 +92,4 @@ exec $HBASE_CLI shell << EOF
     put "blogposts", "TDC_post4", "post:body", "Writing"
     put "blogposts", "TDC_post4", "post:head", "crypt.img"
     put "blogposts", "TDC_post4", "post:title", "Cooking Pie"
-
 EOF

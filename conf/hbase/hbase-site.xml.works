@@ -40,13 +40,27 @@
     See also https://hbase.apache.org/book.html#standalone_dist
   -->
   <property>
-    <name>hbase.cluster.distributed</name>
-    <value>false</value>
+    <name>hbase.rootdir</name>
+    <value>/tmp/hbase</value>
   </property>
+    <property>
+      <name>hbase.cluster.distributed</name>
+      <value>false</value>
+    </property>
+    <property>
+      <name>hbase.wal.provider</name>
+      <value>filesystem</value>
+    </property>
+<!--
   <property>
     <name>hbase.tmp.dir</name>
-    <value>hdfs://localhost:9000/hbase</value>
+    <value>/tmp/hbase</value>
   </property>
+  <property>
+    <name>hbase.rootdir</name>
+    <value>hdfs://localhost:900/hbase</value>
+  </property>
+-->
 <!--  
   <property>
     <name>hbase.unsafe.stream.capability.enforce</name>
