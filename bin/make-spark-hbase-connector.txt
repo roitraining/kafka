@@ -1,0 +1,7 @@
+#git clone https://github.com/apache/hbase-connectors.git
+#mvn -Dspark.version=3.2.1 -Dscala.version=2.12.10 -Dhadoop-three.version=3.3.1 -Dscala.binary.version=2.12 -Dhbase.version=2.4.9 clean install
+
+git clone https://github.com/hortonworks-spark/shc.git
+mvn package -DskipTests
+
+
