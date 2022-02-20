@@ -44,10 +44,12 @@ def initspark(appname = "Test", servername = "local"
             , 'kafka' : 'org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
             , 'kafka-sql' : 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
             , 'spark-avro' : 'org.apache.spark:spark-avro_2.12:3.2.1'
+            , 'hbase' : 'com.hortonworks:shc-core:1.1.1-2.1-s_2.12'
+#            , 'hbase' : 'org.apache.hbase.connectors.spark:hbase-spark:1.0.0'
             }
 
     print('packages', packages)
-    os.environ['PYSPARK_SUBMIT_ARGS'] = ""
+    os.environ['PYSPARK_SUBMIT_ARGS'] = "pyspark-shell"
 
     if packages:
         if type(packages) is str and packages.lower() == 'all':
@@ -58,6 +60,8 @@ def initspark(appname = "Test", servername = "local"
             p = [p for n,p in package_list.items() if n in packages]
             os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + ','.join(p) + ' pyspark-shell'
             print(os.environ['PYSPARK_SUBMIT_ARGS'])
+    else:
+        print('No pacakges chosen', os.environ['PYSPARK_SUBMIT_ARGS'])
 
     if 'cassandra' in os.environ['PYSPARK_SUBMIT_ARGS']:
         conf = (SparkConf().set("spark.cassandra.connection.host", cassandra)
