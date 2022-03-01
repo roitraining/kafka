@@ -17,11 +17,14 @@ cn = None
 mycursor = None
 
 def avro_to_dict(msg):
+   print('----> ', msg)
    buf = io.BytesIO()
    buf.seek(0)
    buf.write(msg)
    x1 = avro.datafile.DataFileReader(buf, avro.io.DatumReader())
    x2 = next(x1)
+   # for r in avro.datafile.DataFileReader(buf, avro.io.DatumReader()):
+   #    return r
    return x2
 
 def insert_sql(event):
