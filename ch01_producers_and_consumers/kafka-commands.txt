@@ -1,6 +1,7 @@
+kafka-topics.sh --list --bootstrap-server localhost:9092
+kafka-topics.sh --bootstrap-server localhost:9092 --create --topic demo1
 kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic demo1
 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic demo2
-kafka-topics.sh --list --bootstrap-sever localhost:9092
 kafka-console-consumer.sh --bootstrap-server localhost:9092 -topic demo1 --from-beginning
 kafka-console-consumer.sh --bootstrap-server localhost:9092 -topic demo1
 kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic demo1 --partitions 2
