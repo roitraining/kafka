@@ -3,29 +3,26 @@
 # pip install avro-json-serializer
 # pip install mysql-connector-python
 
+from kafka import KafkaConsumer
 import io
 import uuid
 import argparse
-import avro.io
-import avro.schema
-import avro.datafile
-from avro_json_serializer import AvroJsonSerializer
-from kafka import KafkaConsumer
+import fastavro
 import mysql.connector
+
 
 cn = None
 mycursor = None
+stock_schema = fastavro.schema.load_schema("stock.avsc")
 
-def avro_to_dict(msg):
-   print('----> ', msg)
-   buf = io.BytesIO()
+def avro_to_dict(msg, schema):
+   print('msg.value ---> ', msg)
+
+   buf = io.BytesIO(msg)
    buf.seek(0)
-   buf.write(msg)
-   x1 = avro.datafile.DataFileReader(buf, avro.io.DatumReader())
-   x2 = next(x1)
-   # for r in avro.datafile.DataFileReader(buf, avro.io.DatumReader()):
-   #    return r
-   return x2
+   ret = fastavro.schemaless_reader(buf, schema)
+
+   return ret
 
 def insert_sql(event):
    kafka_key = uuid.UUID(bytes=event.key)
@@ -66,12 +63,13 @@ def consume(**kvargs):
    for event in consumer:
       try:
          if not cn:
+            print(event)
             try:
-               print('avro consumer -', uuid.UUID(bytes=event.key), event.timestamp, '\n', avro_to_dict(event.value))
+               x = avro_to_dict(event.value, stock_schema)
+               print('avro consumer -', uuid.UUID(bytes=event.key), event.timestamp, '\n', x)
                print(event)
             except:
-               pass
-            print(event)
+               print('bad')
             print('-'*80)
          else:
             insert_sql(event)

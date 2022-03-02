@@ -3,34 +3,28 @@
 # pip install avro
 # pip install avro-python3
 # pip install mysql
+# pip install fastavro
 
 # kafka-topics.sh --bootstrap-server localhost:9092 --create --topic stocks-avro
 # kafka-topics.sh --bootstrap-server localhost:9092 --list
 
 from kafka import KafkaProducer
-import json
+
 import random
 import threading
 import time
 import os
 import argparse
-
-import io
 import uuid
-import avro.io
-import avro.schema
-import avro.datafile
+import fastavro
 
-stock_schema = avro.schema.parse(open("stock.avsc", "rb").read())
+stock_schema = fastavro.schema.load_schema("stock.avsc")
+def dict_to_avro(msg, schema):
+    from io import BytesIO
+    from fastavro import schemaless_writer
 
-def json_to_avro(msg, schema):
-    '''
-    This will take a JSON message and convert it to avro format
-    '''
-    buf = io.BytesIO()
-    writer = avro.datafile.DataFileWriter(buf, avro.io.DatumWriter(), schema)
-    writer.append(msg)
-    writer.flush()
+    buf = BytesIO()
+    fastavro.schemaless_writer(buf, stock_schema, msg)
     buf.seek(0)
     data = buf.read()
     return data
@@ -50,7 +44,7 @@ def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-avro
             }
             key = uuid.uuid4()
             print('avro producer -', 'key:', key, 'msg:', msg)
-            avro_msg = json_to_avro(msg, stock_schema)
+            avro_msg = dict_to_avro(msg, stock_schema)
             producer.send(topic, key=key.bytes, value=avro_msg)
             time.sleep(producer_sleep_time)
 
