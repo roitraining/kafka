@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 """
 spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 1-spark-kafka-json-console.py
+spark-submit --jars spark-sql-kafka.jar 1-spark-kafka-json-console.py
 
 This example will read the stream stocks-json, and just do a minor uppercase transform
 on the data and display it to the console.
@@ -36,19 +37,19 @@ df = (spark.readStream
     .load()
     )
 
-# df.createOrReplaceTempView('table')
-# df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
-df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
+df.createOrReplaceTempView('table')
+df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
+# df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
 
 def write_console(df):
-    query = (df.writeStream 
+    query = (df1.writeStream 
         .outputMode("append")
         .format("console")
         .option("truncate", False)
         )
     return query
 
-query = write_console(df1)
+query = write_console(df)
 query.start().awaitTermination()
 
 
