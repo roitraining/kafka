@@ -40,7 +40,7 @@ df = (spark.readStream
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
-    .option("startingOffsets", "earliest")
+    .option("startingOffsets", "latest")
     .option("failOnDataLoss", False)
     .load()
     )
@@ -60,8 +60,8 @@ print('df2', df2)
 df3 = df2.select(*(df2.columns), col("value2.*")).drop('value2')
 print('df3', df3)
 
-# df4 = df3.withColumnRenamed('key','kafka_key').withColumnRenamed('timestamp', 'kafka_timestamp')
-# print('df4', df4)
+df4 = df3.withColumnRenamed('key','kafka_key').withColumnRenamed('timestamp', 'kafka_timestamp')
+print('df4', df4)
 
 def foreach_batch_to_sql(df, epoch_id):
     cnt = df.count()
@@ -79,7 +79,7 @@ def foreach_batch_to_sql(df, epoch_id):
         mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
         df.write.mode('append').jdbc(mysql_url, table = 'trades') #.save()
 
-query = df3.writeStream.foreachBatch(foreach_batch_to_sql)
+query = df4.writeStream.foreachBatch(foreach_batch_to_sql)
 query.start().awaitTermination()
 
 def write_console(df):

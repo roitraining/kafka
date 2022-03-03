@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # Not working because of a driver issue
 
+# spark-submit --packages org.apache.spark:spark-avro_2.12:3.2.1,org.mongodb.spark:mongo-spark-connector_2.12:2.4.3,org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 spark-kafka-avro-mongo.py
 # spark-submit --jars /usr/share/java/mysql-connector-java.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 spark-kafka-avro-sql.py
 # pyspark --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1
 
@@ -29,9 +30,14 @@ receiver_sleep_time = 4
 stock_schema = open("stock.avsc", "r").read()
 
 from initspark import initspark
-sc, spark, config = initspark()
+sc, spark, config = initspark() #packages = ['kafka', 'mongo', 'spark-avro'])
 
-df: DataFrame = (spark.readStream 
+stock_schema = open("stock.avsc", "r").read()
+print('stock_schema', stock_schema)
+stock_struct = spark.read.format("avro").option("avroSchema", stock_schema).load().schema
+print('stock_struct', stock_struct)
+
+df = (spark.readStream 
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
@@ -39,31 +45,16 @@ df: DataFrame = (spark.readStream
     .load()
     )
 
-# extract the binary value of the message and convert it to the schema read from the avsc file
-df1 = df.withColumn('value', from_avro("value", stock_schema))
-# flatten out the value struct and remove it
-df2 = df1.select(*df.columns, col("value.*")).drop("value")
+df2 = df.select("key", from_avro(df.value, stock_schema, options = {"mode":"PERMISSIVE"}).alias("value"))
+print('df2', df2)
 
-# pick the columns we want to write to sql
-df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_time", "symbol", "price")
+# flatten the struct to a normal DataFrame
+df3 = df2.select(*(df2.columns), col("value.*")).drop("value")
+print('df3', df3)
 
-# alternatively, use spark sql
-# df2.createOrReplaceTempView('trades')
-# df3 = spark.sql("""
-# SELECT key as kafka_key, timestamp as kafka_timestamp, event_time, symbol, price
-# FROM trades
-# """)
+# # pick the columns we want to write to sql
+# df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_time", "symbol", "price")
 
-mysql_url = "jdbc:mysql://localhost:3306/stocks"
-# mysql_table             
-mysql_login = {
-     "user": "python",
-     "password": "student"
-     }
+df3.write.format("mongo").options(collection="people", database="classroom").mode("append").save()
 
-def foreach_batch_function(df, epoch_id):
-    mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=student"
-    df.write.jdbc(mysql_url, table = 'trades')
-
-query = df3.writeStream.foreachBatch(foreach_batch_function)
 query.start().awaitTermination()

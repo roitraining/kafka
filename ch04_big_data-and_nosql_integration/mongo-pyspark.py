@@ -1,5 +1,5 @@
 # pip install pymongo
-# pyspark --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
+# pyspark --packages org.mongodb.spark:mongo-spark-connector_2.12:2.4.3
 
 #import sys
 #sys.path.append('/home/student/ROI/SparkProgram')

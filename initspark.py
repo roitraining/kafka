@@ -44,7 +44,7 @@ def initspark(appname = "Test", servername = "local"
             , 'kafka' : 'org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
             , 'kafka-sql' : 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
             , 'spark-avro' : 'org.apache.spark:spark-avro_2.12:3.2.1'
-            , 'hbase' : 'com.hortonworks:shc-core:1.1.1-2.1-s_2.12'
+            , 'hbase' : 'com.hortonworks:shc-core:1.1.1-2.1-s_2.11'
 #            , 'hbase' : 'org.apache.hbase.connectors.spark:hbase-spark:1.0.0'
             }
 

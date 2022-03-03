@@ -1,3 +1,3 @@
 #! /bin/sh
-spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1 spark-mongo-test.py
+spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.12:2.4.3 spark-mongo-test.py
 
