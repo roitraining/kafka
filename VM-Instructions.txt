@@ -14,10 +14,10 @@
 
 6. After the VM is finished importing, you should be able to start it up. When you get to the login screen,
    use either the following student or root login information:
-   Username:         student
+   Username:          student
    Password:          ROItraining1 (UPPERCASE ROI, lowercase training, number 1)
  
-   Username:         root       (shouldn’t be needed – student has sudo rights)
+   Username:          root       (shouldn’t be needed – student has sudo rights)
    Password:          ROItraining!       (UPPERCASE ROI, lowercase training, ! mark)
 
 7. Whenever you launch a terminal just make sure it is logged in as root and if necessary type sudo su
