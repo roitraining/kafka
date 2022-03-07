@@ -1,0 +1,59 @@
+1. To install a local copy of the VM, use VMWare Player or Workstation for Windows 
+   or VMWare Fusion for machine.
+
+2. Download the OVA file from the following link:
+   https://drive.google.com/file/d/1KaiXyam564C7MB5miTdjWSs06aLe1EkF/view?usp=drivesdk
+
+3. The OVA is about 30GB and you will need an additional 60GB to create the VM from it. So make sure 
+   you have enough space. You can delete the OVA file when done, or move both to an external drive.
+
+4. Using VMWare, create a new VM and choose the option to import an existing VM and point to the OVA file.
+
+5. Configure the VM size according to your available resources on your machine. I suggest 4 cores and 8GG
+   RAM, but you can got bigger if you have it.
+
+6. After the VM is finished importing, you should be able to start it up. When you get to the login screen,
+   use either the following student or root login information:
+   Username:         student
+   Password:          ROItraining1 (UPPERCASE ROI, lowercase training, number 1)
+ 
+   Username:         root       (shouldn’t be needed – student has sudo rights)
+   Password:          ROItraining!       (UPPERCASE ROI, lowercase training, ! mark)
+
+7. Whenever you launch a terminal just make sure it is logged in as root and if necessary type sudo su
+
+8. You can pull the latested version of the class materials by changing to the /class folder and typing:
+   git fetch --all && git reset --hard main && git pull
+
+   This will lose any changes you made to files in that folder but get the latest from the git repository.
+
+9. To start up the services there are scripts in the /class/bin folder which can be executed as needed in
+   the following order:
+
+   start-zookeeper
+   start-kafka
+   start-hadoop
+   start-mongo
+   start-cassandra
+   start-hbase
+
+   You don't need all of them running unless you need them, but to use kafka you need the first two and for hadoop the third one.
+
+10. Since persistence of data is not important, if anything gets corrupted and you need to reset it, run
+
+    format-namenode
+
+11. If the whole VM gets corrupted, just delete it and re-import it from the OVA.
+
+12. Networking should work inside the VM and if you know how and want to you could try to install the
+    VMWare tools, although you don't really need it. You can also use your host's terminal and ssh into 
+    the VM if you prefer.
+
+13. To launch notebooks, first run start-notebook, or start-remote-notebook if you want to use or own
+    browser instead of the one on the VM desktop. Remember to copy the url with the token to run it inside
+    the VM's browser. To use your host's browser the password is student when prompted.
+
+14. There are stop scripts for each service, but you can also just shut down the VM since persistence is
+    not important.
+
+    
