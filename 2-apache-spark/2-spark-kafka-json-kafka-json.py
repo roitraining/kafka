@@ -29,6 +29,14 @@ if not 'sc' in locals():
   from initspark import initspark
   sc, spark, config = initspark()
 
+def publish_to_kafka(df, brokers, topic):
+    query = (df1.writeStream.format("kafka")
+              .option("kafka.bootstrap.servers", brokers) 
+              .option("topic", topic)
+              .option("checkpointLocation", "/tmp")
+            )
+    return query            
+
 df = (spark.readStream 
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
@@ -43,25 +51,6 @@ print('df', df)
 
 df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
 print('df1', df1)
-
-def write_console(df):
-    query = (df.writeStream 
-            .outputMode("append")
-            .format("console")
-            .option("truncate", False)
-            )
-    return query
-
-# query = write_console(df1)
-# query.start().awaitTermination()
-
-def publish_to_kafka(df, brokers, topic):
-    query = (df1.writeStream.format("kafka")
-              .option("kafka.bootstrap.servers", brokers) 
-              .option("topic", topic)
-              .option("checkpointLocation", "/tmp")
-            )
-    return query            
 
 query = publish_to_kafka(df1, brokers, 'classroom')
 query.start().awaitTermination()

@@ -5,7 +5,6 @@ spark-submit --jars spark-sql-kafka.jar 1-spark-kafka-json-console.py
 
 This example will read the stream stocks-json, and just do a minor uppercase transform
 on the data and display it to the console.
-and republish them as new messages to the kafka stream classroom.
 """
 
 import os, sys, json, io
@@ -28,6 +27,14 @@ if not 'sc' in locals():
     from initspark import initspark
     sc, spark, config = initspark()
 
+def write_console(df):
+    query = (df1.writeStream 
+        .outputMode("append")
+        .format("console")
+        .option("truncate", False)
+        )
+    return query
+
 df = (spark.readStream 
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
@@ -38,16 +45,8 @@ df = (spark.readStream
     )
 
 df.createOrReplaceTempView('table')
-df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
-# df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
-
-def write_console(df):
-    query = (df1.writeStream 
-        .outputMode("append")
-        .format("console")
-        .option("truncate", False)
-        )
-    return query
+# df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
+df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
 
 query = write_console(df)
 query.start().awaitTermination()
