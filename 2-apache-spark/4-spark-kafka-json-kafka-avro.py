@@ -31,6 +31,31 @@ if not 'sc' in locals():
   from initspark import initspark
   sc, spark, config = initspark()
 
+    
+def foreach_batch_to_sql(df, epoch_id):
+    cnt = df.count()
+    print(f'foreach_batch cnt = {cnt}')
+    mysql_url = "jdbc:mysql://127.0.0.1:3306/stocks"
+
+    # mysql_table             
+    mysql_login = {
+        "user": "python",
+        "password": "student"
+        }
+
+    if cnt > 0:
+        print('count:', cnt)
+        mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
+        df.write.mode('append').jdbc(mysql_url, table = 'trades') #.save()
+
+def publish_to_kafka(df, brokers, topic):
+    query = (df1.writeStream.format("kafka")
+              .option("kafka.bootstrap.servers", brokers) 
+              .option("topic", topic)
+              .option("checkpointLocation", "/tmp")
+            )
+    return query            
+    
 stock_schema = open("stock.avsc", "r").read()
 print('stock_schema', stock_schema)
 stock_struct = spark.read.format("avro").option("avroSchema", stock_schema).load().schema
@@ -78,44 +103,6 @@ print('df4', df4)
 
 df6 = df4.select("key", to_avro("value", stock_schema).alias("value"))
 print('df6', df6)
-
-def foreach_batch_to_sql(df, epoch_id):
-    cnt = df.count()
-    print(f'foreach_batch cnt = {cnt}')
-    mysql_url = "jdbc:mysql://127.0.0.1:3306/stocks"
-
-    # mysql_table             
-    mysql_login = {
-        "user": "python",
-        "password": "student"
-        }
-
-    if cnt > 0:
-        print('count:', cnt)
-        mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
-        df.write.mode('append').jdbc(mysql_url, table = 'trades') #.save()
-
-# query = df3.writeStream.foreachBatch(foreach_batch_to_sql)
-# query.start().awaitTermination()
-
-def write_console(df):
-    query = (df.writeStream 
-            .outputMode("append")
-            .format("console")
-            .option("truncate", False)
-            )
-    return query
-
-# query = write_console(df6)
-# query.start().awaitTermination()
-
-def publish_to_kafka(df, brokers, topic):
-    query = (df1.writeStream.format("kafka")
-              .option("kafka.bootstrap.servers", brokers) 
-              .option("topic", topic)
-              .option("checkpointLocation", "/tmp")
-            )
-    return query            
 
 query = publish_to_kafka(df6, brokers, 'stocks-avro')
 query.start().awaitTermination()

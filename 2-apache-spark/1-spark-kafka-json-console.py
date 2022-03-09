@@ -28,7 +28,7 @@ if not 'sc' in locals():
     sc, spark, config = initspark()
 
 def write_console(df):
-    query = (df1.writeStream 
+    query = (df.writeStream 
         .outputMode("append")
         .format("console")
         .option("truncate", False)
@@ -39,16 +39,16 @@ df = (spark.readStream
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
-    .option("startingOffsets", "earliest")
+    .option("startingOffsets", "latest")
     .option("failOnDataLoss", False)
     .load()
     )
 
 df.createOrReplaceTempView('table')
-# df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
-df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
+df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
+#df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
 
-query = write_console(df)
+query = write_console(df1)
 query.start().awaitTermination()
 
 
