@@ -30,7 +30,7 @@ if not 'sc' in locals():
   sc, spark, config = initspark()
 
 def publish_to_kafka(df, brokers, topic):
-    query = (df1.writeStream.format("kafka")
+    query = (df.writeStream.format("kafka")
               .option("kafka.bootstrap.servers", brokers) 
               .option("topic", topic)
               .option("checkpointLocation", "/tmp")
@@ -41,7 +41,7 @@ df = (spark.readStream
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
-    .option("startingOffsets", "earliest")
+    .option("startingOffsets", "latest")
     .load()
     )
 print('df', df)
@@ -53,4 +53,4 @@ df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
 print('df1', df1)
 
 query = publish_to_kafka(df1, brokers, 'classroom')
-query.start().awaitTermination()
+query.start().awaitTermination() 

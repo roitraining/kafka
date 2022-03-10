@@ -32,7 +32,7 @@
 
    start-zookeeper
    start-kafka
-   start-hadoop
+   start-hadoop or format-namenode (to start completely fresh)
    start-mongo
    start-cassandra
    start-hbase
