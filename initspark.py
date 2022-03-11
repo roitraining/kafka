@@ -33,6 +33,9 @@ from pyspark.sql.functions import *
 # # os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages ' + 'com.datastax.spark:spark-cassandra-connector_2.12:3.0.0' + ' pyspark-shell'
 # # print(os.environ['PYSPARK_SUBMIT_ARGS'])
 
+# org.apache.spark/spark-streaming-kafka-0-10_2.12 "3.2.1"
+# org.apache.spark:spark-streaming-kafka-0-10_2.12:3.2.1
+
 def initspark(appname = "Test", servername = "local"
     , cassandra = "127.0.0.1", cassandra_user = 'cassandra', cassandra_password='student'
     , mongo = "mongodb://127.0.0.1", mongo_user = '', mongo_password = '', packages = None):
@@ -41,7 +44,8 @@ def initspark(appname = "Test", servername = "local"
     package_list = {
             'cassandra' : 'com.datastax.spark:spark-cassandra-connector_2.12:3.0.0'
             , 'mongo' : 'org.mongodb.spark:mongo-spark-connector_2.12:2.4.3'
-            , 'kafka' : 'org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
+#            , 'kafka' : 'org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2'
+            , 'kafka' : 'org.apache.spark:spark-streaming-kafka-0-10_2.12:3.2.1'
             , 'kafka-sql' : 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1'
             , 'spark-avro' : 'org.apache.spark:spark-avro_2.12:3.2.1'
             , 'hbase' : 'com.hortonworks:shc-core:1.1.1-2.1-s_2.11'

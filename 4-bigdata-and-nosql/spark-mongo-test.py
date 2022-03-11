@@ -1,5 +1,6 @@
 # pip install pymongo
-# pyspark --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
+# pyspark --packages org.mongodb.spark:mongo-spark-connector_2.12:2.4.3
+# spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.12:2.4.3 spark-mongo-test.py
 
 import pymongo
 client = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
@@ -49,7 +50,7 @@ new_data = [{'personid':40, 'firstname':'Sri'}
                  ]
 x1 = spark.createDataFrame(new_data)
 
-x1.write.format("mongo").options(collection="people", database="classroom").mode("append").save()
+x1.write.format("mongo").option("uri", "mongodb://127.0.0.1/classroom.people").options(collection="people", database="classroom").mode("append").save()
 
 print ('*' * 80)
 print ('re-read through spark after spark append records')

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # Not working because of a driver issue
 
-# spark-submit --packages org.apache.spark:spark-avro_2.12:3.2.1,org.mongodb.spark:mongo-spark-connector_2.12:2.4.3,org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 spark-kafka-avro-mongo.py
+# spark-submit --packages org.apache.spark:spark-avro_2.12:3.2.1,org.mongodb.spark:mongo-spark-connector_2.12:2.4.3,org.apache.spark:spark-streaming-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 spark-kafka-avro-mongo.py
 # spark-submit --jars /usr/share/java/mysql-connector-java.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 spark-kafka-avro-sql.py
 # pyspark --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1
 
@@ -41,7 +41,7 @@ df = (spark.readStream
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
-    .option("startingOffsets", "earliest")
+    .option("startingOffsets", "latest")
     .load()
     )
 
@@ -55,6 +55,8 @@ print('df3', df3)
 # # pick the columns we want to write to sql
 # df3 = df2.selectExpr("key as kafka_key", "timestamp as kafka_timestamp", "event_time", "symbol", "price")
 
-df3.write.format("mongo").options(collection="people", database="classroom").mode("append").save()
-
-query.start().awaitTermination()
+def write_mongo(df, epoch_id):
+    df.write.format("mongo").options(collection="trades", database="stock").mode("append").save()
+    
+query = df3.writeStream.foreachBatch(write_mongo).start()
+query.awaitTermination()

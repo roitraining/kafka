@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 """
-spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 3-spark-kafka-json-mysql.py
+spark-submit --jars /usr/share/java/mysql-connector-java.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.apache.spark:spark-avro_2.12:3.2.1 3-spark-kafka-json-mysql.py
 
 This example will read the stream stocks-json, and demonstrate how to parse the data
 the write it to a MySQL database
@@ -69,19 +69,25 @@ print('df4', df4)
 # 3. kafka
 # 4. foreach
 # 5. memory 
+mysql_url = "jdbc:mysql://127.0.0.1:3306/stocks"
+mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
 
 def foreach_batch_to_sql(df, epoch_id):
     cnt = df.count()
     print(f'foreach_batch cnt = {cnt}')
-    mysql_url = "jdbc:mysql://127.0.0.1:3306/stocks"
+#    mysql_url = "jdbc:mysql://127.0.0.1:3306/stocks"
 
     # mysql_table             
     mysql_login = {"user": "python", "password": "student"}
 
     if cnt > 0:
         print('count:', cnt)
-        mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
+#        mysql_url="jdbc:mysql://localhost:3306/stocks?user=python&password=python"
+#        df2 = spark.sql('SELECT * from df join lookup on ')
         df.write.mode('append').jdbc(mysql_url, table = 'trades') #.save()
+
+
+lookup = spark.read.jdbc(mysql_url, table = 'lookup') 
 
 query = df4.writeStream.foreachBatch(foreach_batch_to_sql)
 query.start().awaitTermination()
