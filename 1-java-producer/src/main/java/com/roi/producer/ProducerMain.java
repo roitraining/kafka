@@ -10,7 +10,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer; 
 import org.apache.kafka.clients.producer.ProducerRecord;  
 
-public class Main {  
+public class ProducerMain {  
     public static void main(String[] args) { 
         Properties props = new Properties(); 
         props.put("bootstrap.servers", "localhost:9092"); 
@@ -19,7 +19,7 @@ public class Main {
         props.put("acks", "all");  
         Producer<String, String> producer = new KafkaProducer<>(props);  
         try { 
-            File file = new File(Main.class.getClassLoader().getResource("transactions.txt").getFile()); 
+            File file = new File(ProducerMain.class.getClassLoader().getResource("transactions.txt").getFile()); 
             BufferedReader br = new BufferedReader(new FileReader(file)); 
             String line; 
             while ((line = br.readLine()) != null) { 
