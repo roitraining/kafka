@@ -18,7 +18,7 @@ import argparse
 import io
 import uuid
 
-def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json'):
+def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json2'):
     producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
     producer_sleep_time = 4
     stocks = ['AAPL', 'GOOG', 'MSFT']
@@ -33,7 +33,8 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
             })
             key = uuid.uuid4()
             print('json producer -', 'key:', key, 'msg:', msg)
-            producer.send(topic, key=key.bytes, value=str.encode(msg))
+            p = 0 if stock_number == 0 else 1
+            producer.send(topic, key=key.bytes, value=str.encode(msg), partition=p)
 
             time.sleep(producer_sleep_time)
 
@@ -52,7 +53,7 @@ def main():
    parser.add_argument(
       '-b', '--bootstrap_servers', required=False, type=str, default='localhost:9092')
    parser.add_argument(
-      '-t', '--topic', required=False, type=str, default='stocks-json')
+      '-t', '--topic', required=False, type=str, default='stocks-json2')
 
    args = parser.parse_args()
    print(args)
