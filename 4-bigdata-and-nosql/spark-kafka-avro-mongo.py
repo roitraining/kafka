@@ -41,7 +41,7 @@ df = (spark.readStream
     .format("kafka") 
     .option("kafka.bootstrap.servers", brokers) 
     .option("subscribe", kafka_topic) 
-    .option("startingOffsets", "latest")
+    .option("startingOffsets", "earliest")
     .load()
     )
 
@@ -57,6 +57,7 @@ print('df3', df3)
 
 def write_mongo(df, epoch_id):
     df.write.format("mongo").options(collection="trades", database="stock").mode("append").save()
+    pass
     
 query = df3.writeStream.foreachBatch(write_mongo).start()
 query.awaitTermination()
