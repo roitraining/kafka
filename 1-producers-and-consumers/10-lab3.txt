@@ -1,0 +1,16 @@
+1. Open a terminal window, cd /class and launch 1-python-kafka-json-producer.py
+2. Open another terminal window, cd /class and launch 7-python-kafka-json-consumer-group.py -g group1
+3. Open another terminal window, cd /class and launch 7-python-kafka-json-consumer-group.py -g group2
+4. Notice how both windows get the same messages because they are different consumer groups.
+5. Stop the second consumer group and relaunch it for group1.
+6. Notice how the messages only go to one consumer window now, because they are the same consumer group 
+   and partition.
+7. Stop one of the processes, wait a few seconds and you should see the other consumer eventually start to
+   receive the messages approximately from the offset of where the other ended.
+8. Stop all of the processes.
+9. Start 4-python-kafka-json-producer-partition.py
+10. In each window start with the same group but different partitions and on the topics stocks-json2:
+    7-python-kafka-json-consumer-group.py -g group1 -t stocks-json2 -p 0 
+    7-python-kafka-json-consumer-group.py -g group1 -t stocks-json2 -p 1  
+11. Notice how the two processes get only messages from one partition or the other. Without the second
+    consumer for the same group, those messages would not be read.

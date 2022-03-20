@@ -55,6 +55,9 @@ def consume(**kvargs):
 
    del kvargs['topics']
    
+   kvargs["key_deserializer"] = lambda x : uuid.UUID(bytes = x)
+   kvargs["value_deserializer"] = lambda x : avro_to_dict(x, stock_schema)
+
    print(topics, kvargs)
    consumer = KafkaConsumer(*topics, **kvargs)
 
@@ -65,12 +68,10 @@ def consume(**kvargs):
          if not cn:
             print(event)
             try:
-               x = avro_to_dict(event.value, stock_schema)
-               print('avro consumer -', uuid.UUID(bytes=event.key), event.timestamp, '\n', x)
-               print(event)
+               print('\nDeserialized -', event.offset, event.key, event.timestamp, '\n', event.value)
             except:
                print('bad')
-            print('-'*80)
+            print('-' * 80)
          else:
             insert_sql(event)
       except:

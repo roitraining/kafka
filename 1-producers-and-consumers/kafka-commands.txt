@@ -21,3 +21,9 @@ kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo1
 
 kafka-topics.sh --bootstrap-server localhost:9092 --create --topic stocks-json2
 kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic stocks-json2 --partitions 2
+kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic stocks-json2
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic stocks-json2
+
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic stocks-json2 --property print.key=true --property "key.separator=:"
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic stocks-json2 --partition 0 --property print.key=true --property "key.separator=:" --property print.partition=true
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic stocks-json2 --partition 1 --property print.key=true --property "key.separator=:" --property print.partition=true

@@ -10,12 +10,9 @@ def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
    consumer.assign([TopicPartition(topic, partition)])
    print("consumer = ", consumer)
    for event in consumer:
-      #print('json consumer -', event)
-      key = event.key
-      value = event.value
-      value2 = json.loads(value)
-      #print(type(value), type(value2), value2)
-      print(value2['symbol'], value2['quantity'])
+      key = str(event.key)
+      value = json.loads(event.value)
+      print("\npartition", event.partition, "\noffset", event.offset, "\nkey", key, "\nmessage", value)
 
 
 def main():

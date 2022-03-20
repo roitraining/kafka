@@ -1,0 +1,11 @@
+1. Open a terminal window, cd /class and launch 4-python-kafka-json-producer-partition.py
+2. Open another terminal window, cd /class and launch 5-python-kafka-json-consumer-partition.py -p 0
+3. Notice how you only get messages from one or two of the stocks, the other is going to partition 1
+4. Open another terminal window, cd /class and launch 5-python-kafka-json-consumer-partition.py -p 1
+5. Now you should see messages going to each partition and each has it's own offsets.
+6. Stop the producer.
+7. Edit the 4-python-kafka-json-producer-partition.py to uncomment the two lines that assign a partition
+   when it sends the message, rather than letting the key determine it.
+7. You should see a difference in which partition the messages go to.
+
+   
