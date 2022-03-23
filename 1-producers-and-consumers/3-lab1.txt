@@ -6,6 +6,7 @@
 5. Stop one of the processes
 6. Edit the 2-python-kafka-json-consumer.py to start at the earliest offset and run it in the third window.
    Notice how it goes all the way back to the beginning and eventually catches up with the current messages.
+
 7. Comment out the Consumer constructor and uncomment the block that configures the consumer to use an 
    partition. Set the start to a number around the last offset you saw in the messages, then re-run
    Notice how it started at that offset when the consumer is started.

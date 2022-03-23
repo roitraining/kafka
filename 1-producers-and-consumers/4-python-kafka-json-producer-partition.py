@@ -31,11 +31,18 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
                 'price': random.randint(10000, 30000)/100,
                 'quantity': random.randint(10, 1000)
             })
-            key = stocks[stock_number]
+#            key = stocks[stock_number]
+            key = uuid.uuid4()
+
+#            key = None
             print('json producer -', 'key:', key, 'msg:', msg)
-            # p = 0 if stock_number == 0 else 1
-            # producer.send(topic, key=str.encode(msg), value=str.encode(msg), partition=p)
-            producer.send(topic, key=str.encode(key), value=str.encode(msg))
+#            producer.send(topic, value=str.encode(msg))
+#            p = 0 if stock_number == 0 else 1
+#            producer.send(topic, value=str.encode(msg), partition=p)
+ 
+            producer.send(topic, key=key.bytes, value=str.encode(msg))
+#            producer.send(topic, key=str.encode(key), value=str.encode(msg))
+            #producer.send(topic, key=str.encode(key), value=str.encode(msg))
 
             time.sleep(producer_sleep_time)
 

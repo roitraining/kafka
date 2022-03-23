@@ -35,6 +35,7 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
             key = uuid.uuid4()
             print('json producer -', 'key:', key, 'msg:', msg)
             producer.send(topic, key=key.bytes, value=str.encode(msg))
+#            producer.send(topic, value=str.encode(msg))
 
             time.sleep(producer_sleep_time)
 
