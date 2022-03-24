@@ -16,18 +16,22 @@ mycursor = None
 stock_schema = fastavro.schema.load_schema("stock.avsc")
 
 def avro_to_dict(msg, schema):
-   print('msg.value ---> ', msg)
+   #print('msg.value ---> ', msg)
 
    buf = io.BytesIO(msg)
    buf.seek(0)
    ret = fastavro.schemaless_reader(buf, schema)
+   #print('msg.value2 ---> ', ret)
 
    return ret
 
 def insert_sql(event):
+   print('start-sql')
    kafka_key = uuid.UUID(bytes=event.key)
+   #kafka_key = None
    kafka_timestamp = event.timestamp
-   d = avro_to_dict(event.value)
+   d = event.value
+   print(d)
    event_time = d['event_time']
    symbol = d['symbol']
    price = d['price']

@@ -19,12 +19,15 @@ import uuid
 import fastavro
 
 stock_schema = fastavro.schema.load_schema("stock.avsc")
+print('stock_schema', stock_schema)
+
 def dict_to_avro(msg, schema):
     from io import BytesIO
-    from fastavro import schemaless_writer
+    from fastavro import schemaless_writer, writer
 
     buf = BytesIO()
     fastavro.schemaless_writer(buf, stock_schema, msg)
+    #fastavro.writer(buf, stock_schema, msg)    
     buf.seek(0)
     data = buf.read()
     return data

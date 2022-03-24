@@ -4,7 +4,7 @@
 4. Stop the consumer and look at 13-python-kafka-avro-consumer-deserializer.py
    Notice it's the same logic, except we pass the deserializers into Consumer initializer instead
    of calling them after the message is retrieved.
-5. Stop the consumer and restart it with the -s switch which will redirect the output to append it to after
+5. Stop the consumer and restart it with the -s true switch which will redirect the output to append it to after
    MySQL table
 6. Open another terminal and launch mysql.
 7. use stocks;

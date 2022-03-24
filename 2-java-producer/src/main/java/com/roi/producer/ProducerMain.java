@@ -38,7 +38,8 @@ public class ProducerMain {
                 String[] lineArray = line.split(":"); 
                 String key = lineArray[0]; 
                 String value = lineArray[1]; 
-                producer.send(new ProducerRecord<>("test", key, value)); 
+                ProducerRecord<String, String> msg = new ProducerRecord<>("test", key, value);
+                producer.send(msg); 
             } 
             br.close(); 
         } catch (IOException e) { 

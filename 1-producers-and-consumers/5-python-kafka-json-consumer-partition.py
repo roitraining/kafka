@@ -12,6 +12,11 @@ def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
    print("consumer = ", consumer)
    for event in consumer:
       key = str(event.key)
+      if key == 'AAPL':
+         pass
+      else:
+         pass
+      
       value = json.loads(event.value)
       print("\npartition", event.partition, "\noffset", event.offset, "\nkey", key, "\nmessage", value)
 

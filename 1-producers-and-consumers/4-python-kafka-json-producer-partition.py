@@ -36,6 +36,7 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
 
 #            key = None
             print('json producer -', 'key:', key, 'msg:', msg)
+
 #            producer.send(topic, value=str.encode(msg))
 #            p = 0 if stock_number == 0 else 1
 #            producer.send(topic, value=str.encode(msg), partition=p)

@@ -25,7 +25,8 @@ def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
       value = event.value
       print(event.offset, key, value)
       if event.offset % 100 != 0 or last_commit == event.offset:
-         consumer.commit()
+         #consumer.commit()
+         pass
       else:
          quit()
 

@@ -74,7 +74,7 @@ def consume(**kvargs):
          else:
             insert_sql(event)
       except:
-         pass
+         print('sql error')
 
 def main():
    global cn, mycursor
