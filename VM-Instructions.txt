@@ -2,7 +2,7 @@
    or VMWare Fusion for machine.
 
 2. Download the OVA file from the following link:
-   https://drive.google.com/file/d/1KaiXyam564C7MB5miTdjWSs06aLe1EkF/view?usp=drivesdk
+   https://drive.google.com/file/d/1NvK7lUSc8rcm3ODyoaMBTY1r0N5fHrKw/view?usp=sharing
 
 3. The OVA is about 30GB and you will need an additional 60GB to create the VM from it. So make sure 
    you have enough space. You can delete the OVA file when done, or move both to an external drive.
@@ -15,14 +15,11 @@
 6. After the VM is finished importing, you should be able to start it up. When you get to the login screen,
    use either the following student or root login information:
    Username:          student
-   Password:          ROItraining1 (UPPERCASE ROI, lowercase training, number 1)
+   Password:          student 
  
-   Username:          root       (shouldn’t be needed – student has sudo rights)
-   Password:          ROItraining!       (UPPERCASE ROI, lowercase training, ! mark)
-
 7. Whenever you launch a terminal just make sure it is logged in as root and if necessary type sudo su
 
-8. You can pull the latested version of the class materials by changing to the /class folder and typing:
+8. You can pull the latest version of the class materials by changing to the /class folder and typing:
    git fetch --all && git reset --hard main && git pull
 
    This will lose any changes you made to files in that folder but get the latest from the git repository.
@@ -56,4 +53,20 @@
 14. There are stop scripts for each service, but you can also just shut down the VM since persistence is
     not important.
 
-    
+15. I usually configure the networking on the VM to autodetect so it gets it's own IP address on the
+    network. Network ens33 is the on
+
+
+These are the settings I used for /etc/netplan/50-cloud-init.yaml
+
+network:
+    renderer: networkd
+    ethernets:
+        ens33:
+            dhcp4: true
+    version: 2
+
+You may also try these commands to get the networking up:
+ip link set dev ens33 up
+sudo service network-manager restart
+
