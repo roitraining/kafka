@@ -11,7 +11,6 @@ from pyspark.sql import *
 from pyspark.sql.utils import StreamingQueryException
 import sys
 import json
-from pyspark.sql.avro.functions import from_avro, to_avro
 from pyspark.sql.functions import *
 
 os.environ['PYSPARK_PYTHON'] = '/usr/bin/python3'
@@ -48,7 +47,10 @@ df = (spark.readStream
 print('df', df)
 
 # Cast the bytes of the message.value to a string
-df1 = df.selectExpr("CAST(value AS STRING) as value")
+df.createOrReplaceTempView('table')
+df1 = spark.sql("""SELECT CAST(value AS STRING) as value, timestamp, key from table""")
+
+#df1 = df.selectExpr("CAST(value AS STRING) as value")
 print('df1', df1)
 
 # cast the string json to a struct object using the from_json and struct object created above
@@ -87,7 +89,7 @@ def foreach_batch_to_sql(df, epoch_id):
         df.write.mode('append').jdbc(mysql_url, table = 'trades') #.save()
 
 
-lookup = spark.read.jdbc(mysql_url, table = 'lookup') 
+#lookup = spark.read.jdbc(mysql_url, table = 'lookup') 
 
 query = df4.writeStream.foreachBatch(foreach_batch_to_sql)
 query.start().awaitTermination()

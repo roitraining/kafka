@@ -3,6 +3,7 @@
 
 2. Download the OVA file from the following link:
    https://drive.google.com/file/d/1NvK7lUSc8rcm3ODyoaMBTY1r0N5fHrKw/view?usp=sharing
+   https://storage.googleapis.com/files.roitraining.com/OVA/Kafka.ova
 
 3. The OVA is about 30GB and you will need an additional 60GB to create the VM from it. So make sure 
    you have enough space. You can delete the OVA file when done, or move both to an external drive.

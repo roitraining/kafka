@@ -41,7 +41,7 @@ public class ConsumerMain {
                         record.key(), record.value(),
                         record.partition(), record.offset());
 				});
-				consumer.commitAsync();
+			consumer.commitAsync();
 		}
 		consumer.close();
 		System.out.println("Done");

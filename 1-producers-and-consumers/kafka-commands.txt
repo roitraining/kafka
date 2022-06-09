@@ -7,14 +7,17 @@ kafka-console-producer.sh --bootstrap-server localhost:9092 --topic demo1
 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --from-beginning
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 -- partition 0 --offset earliest
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 -- partition 0 --offset latest
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 -- partition 0 --offset 2
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --partition 0 --offset earliest
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --partition 0 --offset latest
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --partition 0 --offset 2
 
 kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic demo1 --partitions 2
 kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic demo1
 
 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic demo1 --property "parse.key=true" --property "key.separator=:"
+
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --partition 0 
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --partition 1
 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --property print.key=true --property "key.separator=:"
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo1 --partition 0 --property print.key=true --property "key.separator=:" --property print.partition=true

@@ -16,6 +16,7 @@ from kafka import KafkaConsumer, TopicPartition
 def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json', group_id = 'group1'):
    consumer = KafkaConsumer(topic, group_id = group_id
    , enable_auto_commit = False
+   , auto_commit_interval_ms = 1
    , key_deserializer = lambda x : uuid.UUID(bytes = x)
    , value_deserializer = lambda x : json.loads(x))
    last_commit = consumer.committed(partition = TopicPartition(topic, 0))
@@ -25,9 +26,10 @@ def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
       value = event.value
       print(event.offset, key, value)
       if event.offset % 100 != 0 or last_commit == event.offset:
-         #consumer.commit()
+         consumer.commit()
          pass
       else:
+         pass
          quit()
 
 
