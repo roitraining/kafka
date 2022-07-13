@@ -24,7 +24,6 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
     stocks = ['AAPL', 'GOOG', 'MSFT']
 
     def stock_message(stock_number):
-        p = 0
         while True:
             msg = json.dumps({
                 'event_time': str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
@@ -32,34 +31,24 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
                 'price': random.randint(10000, 30000)/100,
                 'quantity': random.randint(10, 1000)
             })
-            # No Key
-            key = None
-            producer.send(topic, value=str.encode(msg))
+#            key = None
+#            producer.send(topic, value=str.encode(msg))
 
-            # Manual Partition
-#            p = (p + 1) % 2
-#            producer.send(topic, value=str.encode(msg), partition=p)
+#            key = None
 
-            # Random Key
+            key = stocks[stock_number]
+#            producer.send(topic, key=str.encode(key), value=str.encode(msg))
+
+            p = 0 if stock_number == 0 else 1
+            producer.send(topic, key=str.encode(key), value=str.encode(msg), partition=p)
+ 
 #            key = uuid.uuid4()
 #            producer.send(topic, key=key.bytes, value=str.encode(msg))
 
-            # Meaningful Key
-#            key = stocks[stock_number]
 #            producer.send(topic, key=str.encode(key), value=str.encode(msg))
-
-            # Meaningful Key and manual parition
-            # if key == 'AAPL':
-            #     p = 0
-            # elif key == 'MSFT':
-            #     p = 1
-            # else:
-            #     p = 2
-
-            # producer.send(topic, key=str.encode(key), value=str.encode(msg), partition = p)
+            #producer.send(topic, key=str.encode(key), value=str.encode(msg))
 
             print('json producer -', 'key:', key, 'msg:', msg)
-
             time.sleep(producer_sleep_time)
 
     thread_list = [threading.Thread(target=stock_message, args=(i,)) for i in range(len(stocks))]

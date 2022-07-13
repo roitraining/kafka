@@ -38,7 +38,6 @@ def insert_sql(event):
    print(sql)
    mycursor.execute(sql)
    cn.commit()
-   #consumer.commit()
 
 def consume(**kvargs):
    print(kvargs)
@@ -55,8 +54,7 @@ def consume(**kvargs):
       topics = [topics]
 
    del kvargs['topics']
-
-   kvargs['enable_auto_commit'] = False  
+   
    print(topics, kvargs)
    consumer = KafkaConsumer(*topics, **kvargs)
 
@@ -75,7 +73,6 @@ def consume(**kvargs):
             print('-' * 80)
          else:
             insert_sql(event)
-            consumer.commit()
       except:
          print('sql error')
 

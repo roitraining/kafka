@@ -6,30 +6,27 @@ from kafka import KafkaConsumer, TopicPartition
 
 # Consumer starting from default of latest
 bootstrap_servers = 'localhost:9092'
-# consumer = KafkaConsumer('stocks-json', bootstrap_servers = bootstrap_servers)
+consumer = KafkaConsumer('stocks-json', bootstrap_servers = bootstrap_servers)
 
 # Consumer starting from earliest
-# consumer = KafkaConsumer('stocks-json', bootstrap_servers = bootstrap_servers, auto_offset_reset='earliest')
-
+# consumer = KafkaConsumer('stocks-json', auto_offset_reset='earliest')
 
 # Consumer starting from specific offset
-consumer = KafkaConsumer(bootstrap_servers = bootstrap_servers)
-partition0 = TopicPartition('stocks-json', 0)
-#partition2 = TopicPartition('stocks-json', 1)
-consumer.assign([partition0])
-start = 1000
-consumer.seek(partition0, start)
+# consumer = KafkaConsumer()
+# partition = TopicPartition('stocks-json', 0)
+# #partition2 = TopicPartition('stocks-json', 1)
+# consumer.assign([partition])
+# start = 5354
+# consumer.seek(partition, start)
 
 print("consumer = ", consumer)
 for event in consumer:
    print('Raw Message:', event, type(event))
    key = event.key
    value = event.value
-   try:
-      key2 = uuid.UUID(bytes = key)
-   except:
-      key2 = None
-   #key2 = None
+   #print("Converted Message Value:", event.offset, key, value)
+   #key2 = uuid.UUID(bytes = key)
+   key2 = str(key)
    value2 = json.loads(value)
    print("Converted Message Value:", event.offset, key2, value2, value2['symbol'])
    # print(value2['symbol'], value2['quantity'])

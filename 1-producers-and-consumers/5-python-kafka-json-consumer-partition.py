@@ -6,23 +6,21 @@ import argparse
 from kafka import KafkaConsumer, TopicPartition
 
 def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json2', partition = 0):
-   # read all partitions
-   consumer = KafkaConsumer(topic, bootstrap_servers = bootstrap_servers)
+   # consumer = KafkaConsumer('stocks-json2', bootstrap_servers = bootstrap_servers)
 
-   # read specific partitions
-   #consumer = KafkaConsumer()
+   consumer = KafkaConsumer(bootstrap_servers = bootstrap_servers)
+   partition = 1
    #consumer.assign([TopicPartition(topic, partition)])
-   #consumer.assign([TopicPartition(topic, 0), TopicPartition(topic, 1)])
-
+   consumer.assign([TopicPartition(topic, 0), TopicPartition(topic, 1)])
    print("consumer = ", consumer)
    for event in consumer:
-      if event.key is None:
-         key = None
-      else:
-         try:
-            key =  uuid.UUID(bytes = key)
-         except:
-            key = str(event.key)
+      key = event.key
+      key = str(key)
+      # key = str(event.key)
+      # if key == 'AAPL':
+      #    pass
+      # else:
+      #    pass
       
       value = json.loads(event.value)
       print("\npartition", event.partition, "\noffset", event.offset, "\nkey", key, "\nmessage", value)

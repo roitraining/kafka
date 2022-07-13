@@ -48,9 +48,7 @@ def produce_avro_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-avro
             key = uuid.uuid4()
             avro_msg = dict_to_avro(msg, stock_schema)
             print('avro producer -', 'key:', key, 'msg:', msg, 'avro:' , avro_msg)
-            r = producer.send(topic, key=key.bytes, value=avro_msg)
-            print(r.is_done, r.succeeded(), r.failed(), r.value)
-            #print(r,dir(r))
+            producer.send(topic, key=key.bytes, value=avro_msg)
             time.sleep(producer_sleep_time)
 
     thread_list = [threading.Thread(target=stock_message, args=(i,)) for i in range(len(stocks))]
