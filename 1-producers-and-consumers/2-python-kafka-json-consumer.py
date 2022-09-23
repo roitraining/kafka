@@ -24,10 +24,10 @@ for event in consumer:
    print('Raw Message:', event, type(event))
    key = event.key
    value = event.value
-   #print("Converted Message Value:", event.offset, key, value)
-   #key2 = uuid.UUID(bytes = key)
+
    key2 = str(key)
+   #key2 = uuid.UUID(bytes = key)
    value2 = json.loads(value)
+
    print("Converted Message Value:", event.offset, key2, value2, value2['symbol'])
-   # print(value2['symbol'], value2['quantity'])
    print('-' * 80)

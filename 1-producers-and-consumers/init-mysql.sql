@@ -6,7 +6,7 @@ use stocks;
 create table trades
 (
 kafka_key binary(16)
-,kafka_timestamp bigint
+,kafka_timestamp bigint(32)
 ,event_time datetime
 ,symbol varchar(5)
 ,price decimal(13,2)

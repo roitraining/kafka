@@ -15,7 +15,7 @@ cn = None
 mycursor = None
 stock_schema = fastavro.schema.load_schema("stock.avsc")
 
-def avro_to_dict(msg, schema):
+def avro_to_dict(msg, schema = stock_schema):
    print('msg.value ---> ', msg)
 
    buf = io.BytesIO(msg)
@@ -25,19 +25,23 @@ def avro_to_dict(msg, schema):
    return ret
 
 def insert_sql(event):
-   kafka_key = uuid.UUID(bytes=event.key)
-   kafka_timestamp = event.timestamp
-   d = avro_to_dict(event.value)
-   event_time = d['event_time']
-   symbol = d['symbol']
-   price = d['price']
-   quantity = d['quantity']
-   sql = f"""INSERT INTO trades(kafka_key, kafka_timestamp, event_time, symbol, price, quantity)
-   VALUES (UNHEX(REPLACE('{kafka_key}', '-', '')), {kafka_timestamp}, '{event_time}', '{symbol}', {price}, {quantity})
-   """
-   print(sql)
-   mycursor.execute(sql)
-   cn.commit()
+   print('sql', event)
+   try:
+      kafka_key = uuid.UUID(bytes=event.key)
+      kafka_timestamp = event.timestamp
+      d = avro_to_dict(event.value)
+      event_time = d['event_time']
+      symbol = d['symbol']
+      price = d['price']
+      quantity = d['quantity']
+      sql = f"""INSERT INTO trades(kafka_key, kafka_timestamp, event_time, symbol, price, quantity)
+      VALUES (UNHEX(REPLACE('{kafka_key}', '-', '')), {kafka_timestamp}, '{event_time}', '{symbol}', {price}, {quantity})
+      """
+      print(sql)
+      mycursor.execute(sql)
+      cn.commit()
+   except Exception as e:
+      print(e)
 
 def consume(**kvargs):
    print(kvargs)

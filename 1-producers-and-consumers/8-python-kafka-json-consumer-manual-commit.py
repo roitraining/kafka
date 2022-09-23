@@ -11,22 +11,35 @@ from kafka import KafkaConsumer, TopicPartition
 # enable_auto_commit
 # auto_commit_interval_ms
 # max_poll_records 
+def key_deser(x):
+   try:
+      return uuid.UUID(bytes = x)
+   except:
+      return uuid.uuid4()
+
 
 
 def consume_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json', group_id = 'group1'):
    consumer = KafkaConsumer(topic, group_id = group_id
-   , enable_auto_commit = True
-   , auto_commit_interval_ms = 1
-   , key_deserializer = lambda x : uuid.UUID(bytes = x)
+    , enable_auto_commit = False
+   # , auto_commit_interval_ms = 0
+#   , key_deserializer = lambda x : uuid.UUID(bytes = x)
+   , key_deserializer = key_deser
    , value_deserializer = lambda x : json.loads(x))
-   last_commit = consumer.committed(partition = TopicPartition(topic, 0))
-   print("consumer = ", consumer, "last commit", last_commit)
+   last_commit2 = 0
+   last_commit3 = 0
+   last_commit1 = consumer.committed(partition = TopicPartition(topic, 0))
+   # last_commit2 = consumer.committed(partition = TopicPartition(topic, 1))
+   # last_commit3 = consumer.committed(partition = TopicPartition(topic, 2))
+   print("consumer = ", consumer, "last commit", last_commit1, last_commit2, last_commit3)
+   input('ENTER')
    for event in consumer:
       try:
          key = event.key
          value = event.value
-         print(event.offset, key, value)
-         #consumer.commit()
+         print(event.topic, event.partition, event.offset, key, value)
+         consumer.commit()
+         print('whatever')
       except:
          pass
       # if event.offset % 10 != 0 or last_commit == event.offset:

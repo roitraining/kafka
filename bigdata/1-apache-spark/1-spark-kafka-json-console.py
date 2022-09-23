@@ -45,8 +45,8 @@ df = (spark.readStream
     )
 
 df.createOrReplaceTempView('table')
-#df1 = spark.sql("""SELECT 'new data' as newfield, * from table""")
-df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
+df1 = spark.sql("""SELECT 'new data' as newfield, cast(value as string) as value, * from table""")
+#df1 = df.selectExpr("UPPER(CAST(value AS STRING)) as value")
 
 query = write_console(df1)
 query.start().awaitTermination()

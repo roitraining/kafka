@@ -48,7 +48,7 @@ print('df', df)
 
 # Cast the bytes of the message.value to a string
 df.createOrReplaceTempView('table')
-df1 = spark.sql("""SELECT CAST(value AS STRING) as value, timestamp, key from table""")
+df1 = spark.sql("""SELECT CAST(value AS STRING) as value, 0 as timestamp, key from table""")
 
 #df1 = df.selectExpr("CAST(value AS STRING) as value")
 print('df1', df1)

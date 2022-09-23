@@ -18,7 +18,7 @@ import argparse
 import io
 import uuid
 
-def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json2'):
+def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json2', option = '1'):
     producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
     producer_sleep_time = 4
     stocks = ['AAPL', 'GOOG', 'MSFT']
@@ -31,23 +31,21 @@ def produce_json_data(bootstrap_servers = 'localhost:9092', topic = 'stocks-json
                 'price': random.randint(10000, 30000)/100,
                 'quantity': random.randint(10, 1000)
             })
-#            key = None
-#            producer.send(topic, value=str.encode(msg))
 
-#            key = None
-
-            key = stocks[stock_number]
-#            producer.send(topic, key=str.encode(key), value=str.encode(msg))
-
-            p = 0 if stock_number == 0 else 1
-            producer.send(topic, key=str.encode(key), value=str.encode(msg), partition=p)
+            if option == '1':
+                key = None
+                producer.send(topic, value=str.encode(msg))
+            elif option == '2':
+                key = uuid.uuid4()
+                producer.send(topic, key=key.bytes, value=str.encode(msg))
+            elif option == '3':
+                key = stocks[stock_number]
+                producer.send(topic, key=str.encode(key), value=str.encode(msg))
+            elif option == '4':
+                key = stocks[stock_number]
+                p = 0 if stock_number == 0 else 1
+                producer.send(topic, key=str.encode(key), value=str.encode(msg), partition=p)
  
-#            key = uuid.uuid4()
-#            producer.send(topic, key=key.bytes, value=str.encode(msg))
-
-#            producer.send(topic, key=str.encode(key), value=str.encode(msg))
-            #producer.send(topic, key=str.encode(key), value=str.encode(msg))
-
             print('json producer -', 'key:', key, 'msg:', msg)
             time.sleep(producer_sleep_time)
 
@@ -67,12 +65,14 @@ def main():
       '-b', '--bootstrap_servers', required=False, type=str, default='localhost:9092')
    parser.add_argument(
       '-t', '--topic', required=False, type=str, default='stocks-json2')
+   parser.add_argument(
+      '-o', '--option', required=False, type=str, default='1')
 
    args = parser.parse_args()
    print(args)
 
 
-   produce_json_data(bootstrap_servers = args.bootstrap_servers, topic = args.topic)
+   produce_json_data(bootstrap_servers = args.bootstrap_servers, topic = args.topic, option = args.option)
 
 if __name__ == '__main__':
    main()
