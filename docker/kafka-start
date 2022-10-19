@@ -1,0 +1,5 @@
+#! /bin/sh
+NODES="${1:-${NODES:-3}}"
+echo "Starting kafka with $NODES nodes."
+docker-compose -f ./docker-compose-$NODES.yaml up -d
+

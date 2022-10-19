@@ -20,6 +20,8 @@
         ports:
           - "9092:9092"
           - "8090:8090"
+        volumes:
+          - .:/host
         environment:
           KAFKA_BROKER_ID: 0
           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -49,6 +51,8 @@
           - zookeeper
         ports:
           - "9192:9192"
+        volumes:
+          - .:/host
         environment:
           KAFKA_BROKER_ID: 1
           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -77,6 +81,8 @@
           - zookeeper
         ports:
           - "9292:9292"
+        volumes:
+          - .:/host
         environment:
           KAFKA_BROKER_ID: 2
           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -105,6 +111,8 @@
           - zookeeper
         ports:
           - "9392:9392"
+        volumes:
+          - .:/host
         environment:
           KAFKA_BROKER_ID: 3
           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -133,6 +141,8 @@
           - zookeeper
         ports:
           - "9492:9492"
+        volumes:
+          - .:/host
         environment:
           KAFKA_BROKER_ID: 4
           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181

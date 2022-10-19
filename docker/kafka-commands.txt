@@ -1,0 +1,57 @@
+kafka-topics --bootstrap-server localhost:9092 --list 
+
+# create a topic with one partition and one copy
+kafka-topics --bootstrap-server localhost:9092 --create --topic demo1
+kafka-topics --bootstrap-server localhost:9092 --describe --topic demo1
+kafka-topics --bootstrap-server localhost:9092 --delete --topic demo1
+
+
+# create a topic with one partition and three copies
+kafka-topics --bootstrap-server localhost:9092 --create --topic demo2 --replication-factor 3
+kafka-topics --bootstrap-server localhost:9092 --describe --topic demo2
+
+# create a simple test producer
+kafka-console-producer --bootstrap-server localhost:9092 --topic demo2
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo2
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo2 --from-beginning
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo2 --partition 0 --offset earliest
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo2 --partition 0 --offset latest
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo2 --partition 0 --offset 2
+
+kafka-topics --bootstrap-server localhost:9092 --alter --topic demo1 --partitions 2
+kafka-topics --bootstrap-server localhost:9092 --describe --topic demo1
+
+kafka-console-producer --bootstrap-server localhost:9092 --topic demo1 --property "parse.key=true" --property "key.separator=:"
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo1 --partition 0 
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo1 --partition 1
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo1 --property print.key=true --property "key.separator=:"
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo1 --partition 0 --property print.key=true --property "key.separator=:" --property print.partition=true
+kafka-console-consumer --bootstrap-server localhost:9092 --topic demo1 --partition 1 --property print.key=true --property "key.separator=:" --property print.partition=true
+
+kafka-topics --bootstrap-server localhost:9092 --delete --topic demo1
+
+kafka-topics --bootstrap-server localhost:9092 --create --topic stocks-json2 
+kafka-topics --bootstrap-server localhost:9092 --alter --topic stocks-json2 --partitions 2
+kafka-topics --bootstrap-server localhost:9092 --describe --topic stocks-json2
+kafka-topics --bootstrap-server localhost:9092 --delete --topic stocks-json2
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic stocks-json2 --property print.key=true --property "key.separator=:"
+kafka-console-consumer --bootstrap-server localhost:9092 --topic stocks-json2 --partition 0 --property print.key=true --property "key.separator=:" --property print.partition=true
+kafka-console-consumer --bootstrap-server localhost:9092 --topic stocks-json2 --partition 1 --property print.key=true --property "key.separator=:" --property print.partition=true
+
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic stocks-json
+
+kafka-topics --bootstrap-server localhost:9092 --alter --topic stocks-json2 --partitions 3
+kafka-topics --topic __consumer_offsets --bootstrap-server localhost:9092 --from-beginning
+
+kafka-topics --bootstrap-server localhost:9092 --delete --topic stocks-json
+kafka-topics --bootstrap-server localhost:9092 --delete --topic stocks-json2
+kafka-topics --bootstrap-server localhost:9092 --delete --topic stocks-avro
+
+kafka-topics --bootstrap-server localhost:9092 --create --topic stocks-json --partitions 1 
+kafka-topics --bootstrap-server localhost:9092 --create --topic stocks-json2 --partitions 2
+kafka-topics --bootstrap-server localhost:9092 --create --topic stocks-avro --partitions 1 

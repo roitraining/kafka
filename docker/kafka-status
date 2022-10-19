@@ -1,0 +1,4 @@
+#! /bin/sh
+NODES="${1:-${NODES:-3}}"
+docker-compose -f ./docker-compose-$NODES.yaml ps
+

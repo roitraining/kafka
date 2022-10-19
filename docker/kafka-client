@@ -1,0 +1,4 @@
+#! /bin/sh
+BROKER="${1:-0}"
+docker exec -it broker$BROKER /bin/bash
+
